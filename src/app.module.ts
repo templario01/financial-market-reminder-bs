@@ -1,8 +1,11 @@
 import { Module } from '@nestjs/common';
-import { FinancialMarketModule } from './modules/financial-market/financial-market.module';
+import { MarketInstrumentModule } from './modules/market-instrument/market-instrument.module';
 import { ConfigModule } from '@nestjs/config';
 import { validateEnvs } from './core/common/validators/env-validator';
-import { configuration, ConfigVariables } from './core/settings/settings.configuration';
+import {
+  configuration,
+  ConfigVariables,
+} from './core/settings/settings.configuration';
 
 @Module({
   imports: [
@@ -10,7 +13,7 @@ import { configuration, ConfigVariables } from './core/settings/settings.configu
       load: [configuration],
       validate: (config) => validateEnvs(config, ConfigVariables),
     }),
-    FinancialMarketModule,
+    MarketInstrumentModule,
   ],
   controllers: [],
   providers: [],

@@ -8,7 +8,9 @@ export class GetEtfInformationUseCase {
   constructor(private readonly marketQuoteRepository: MarketQuoteRepository) {}
 
   async execute(ticker: string): Promise<MarketEtfResponseDto> {
-    const marketQuote = await this.marketQuoteRepository.getQuote(ticker);
+    const marketQuote = await this.marketQuoteRepository.getQuote(
+      ticker.toUpperCase(),
+    );
     return plainToInstance(MarketEtfResponseDto, marketQuote);
   }
 }

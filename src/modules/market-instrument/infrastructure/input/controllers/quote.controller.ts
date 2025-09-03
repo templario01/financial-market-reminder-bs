@@ -3,17 +3,16 @@ import { GetEtfInformationUseCase } from '../../../application/get-etf-price.use
 import { GetEtfRequestDto } from '../dtos/get-etf.request.dto';
 import { MarketEtfResponseDto } from '../dtos/etf.response.dto';
 
-@Controller('financial-market')
-export class FinancialMarketController {
+@Controller('quote')
+export class QuoteController {
   constructor(
     private readonly getEtfInformationUseCase: GetEtfInformationUseCase,
   ) {}
 
-  @Get('etf/:ticker')
+  @Get(':ticker')
   async getEtfInformation(
     @Param() params: GetEtfRequestDto,
   ): Promise<MarketEtfResponseDto> {
-    console.log(`Fetching ETF information for ticker: ${params.ticker}`);
     return this.getEtfInformationUseCase.execute(params.ticker);
   }
 }
