@@ -10,6 +10,7 @@ export class PrismaUserMapper {
       isActive: user.isActive,
       hasActiveNotifications: user.hasActiveNotifications,
       phoneNumber: user.phoneNumber,
+      encryptedPassword: user.password,
     } as UserEntity);
   }
 }

@@ -16,8 +16,10 @@ import { GoogleAuthService } from './application/services/google.auth.service';
 import { MailModule } from '../../core/common/modules/mail/mail.module';
 import { AuthController } from './infrastructure/input/controllers/auth.controller';
 import { ValidateAuthVerificationCodeUseCase } from './application/validate-auth-verification-code.use-case';
+import { LoginUserUseCase } from './application/login-user.use-case';
 
 export const useCases = [
+  LoginUserUseCase,
   RegisterUserUseCase,
   SendAuthVerificationCodeUseCase,
   SignInWithGoogleUseCase,
