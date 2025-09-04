@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-
 }
 
 datasource db {
@@ -14,9 +13,47 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Quote {
+model User {
+  id                     String              @id @default(auto()) @map("_id") @db.ObjectId
+  email                  String              @unique
+  password               String?
+  phoneNumber            String?             @map("phone_number")
+  alias                  String?
+  authProviders          AuthProvider[]      @default([LOCAL]) @map("auth_providers")
+  hasActiveNotifications Boolean             @default(false) @map("has_active_notifications")
+  createdAt              DateTime            @default(now()) @map("created_at")
+  updatedAt              DateTime            @default(now()) @updatedAt @map("updated_at")
+  isActive               Boolean             @default(true)
+  favoriteQuotes         UserFavoriteQuote[]
+
+  @@map("users")
+}
+
+model VerificationCode {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  code            String
+  associatedEmail String   @unique @map("associated_email")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @default(now()) @updatedAt @map("updated_at")
+  expirationTime  DateTime @map("expiration_time")
+
+  @@map("verification_codes")
+}
+
+model UserFavoriteQuote {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  ticker        String   @unique
+  userId        String   @db.ObjectId
+  quoteTickerId String
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, quoteTickerId])
+  @@map("user_favorite_quotes")
+}
+
+model QuotePrice {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  tickerId      String
   currentPrice  Float
   change        Float
   percentChange Float
@@ -25,4 +62,14 @@ model Quote {
   open          Float
   previousClose Float
   lastUpdated   DateTime @default(now())
+  createdAt     DateTime @default(now())
+
+  @@index([tickerId, lastUpdated])
+  @@map("quote_prices")
+}
+
+enum AuthProvider {
+  LOCAL
+  GOOGLE
+  FACEBOOK
 }

@@ -6,6 +6,7 @@ import {
   configuration,
   ConfigVariables,
 } from './core/settings/settings.configuration';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import {
       validate: (config) => validateEnvs(config, ConfigVariables),
     }),
     MarketInstrumentModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
