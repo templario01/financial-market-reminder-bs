@@ -1,6 +1,6 @@
 import { IsAlphanumeric, IsNotEmpty, Length } from 'class-validator';
 
-export class GetEtfRequestDto {
+export class GetQuoteRequestDto {
   @IsNotEmpty()
   @IsAlphanumeric()
   @Length(1, 6)

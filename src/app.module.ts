@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { MarketInstrumentModule } from './modules/market-instrument/market-instrument.module';
+import { MarketInstrumentModule } from './modules/market-quote/market-instrument.module';
 import { ConfigModule } from '@nestjs/config';
 import { validateEnvs } from './core/common/validators/env-validator';
 import {

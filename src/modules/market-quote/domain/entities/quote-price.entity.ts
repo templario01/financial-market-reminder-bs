@@ -1,4 +1,4 @@
-export class MarketQuotePriceEntity {
+export class QuotePriceEntity {
   constructor(
     public readonly currentPrice: number,
     public readonly change: number,

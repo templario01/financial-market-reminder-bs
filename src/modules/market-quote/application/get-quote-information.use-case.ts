@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
-
 import { QuoteRepository } from '../domain/repositories/quote.repository';
 import { FinancialMarketRepository } from '../domain/repositories/financial-market.repository';
-
-import { MarketQuoteEntity } from '../domain/entities/market-quote.entity';
+import { QuoteEntity } from '../domain/entities/market-quote.entity';
 import { plainToInstance } from 'class-transformer';
 
 @Injectable()
@@ -13,7 +11,7 @@ export class GetQuoteInformationUseCase {
     private readonly quoteRepository: QuoteRepository,
   ) {}
 
-  async execute(ticker: string): Promise<MarketQuoteEntity> {
+  async execute(ticker: string): Promise<QuoteEntity> {
     const tickerUc = ticker.toUpperCase();
     const quotePrice =
       await this.financialMarketRepository.getQuotePrice(tickerUc);
@@ -23,10 +21,10 @@ export class GetQuoteInformationUseCase {
       quote = await this.registerQuote(tickerUc);
     }
 
-    return plainToInstance(MarketQuoteEntity, { ...quote, price: quotePrice });
+    return plainToInstance(QuoteEntity, { ...quote, price: quotePrice });
   }
 
-  private async registerQuote(ticker: string): Promise<MarketQuoteEntity> {
+  private async registerQuote(ticker: string): Promise<QuoteEntity> {
     const quoteInformation =
       await this.financialMarketRepository.getQuoteInformation(ticker);
     if (!quoteInformation) {

@@ -1,9 +1,9 @@
 import { Quote } from '@prisma/client';
-import { MarketQuoteEntity } from '../../../../domain/entities/market-quote.entity';
+import { QuoteEntity } from '../../../../domain/entities/market-quote.entity';
 
 export class PrismaQuoteMapper {
-  static toEntity(prismaQuote: Quote): MarketQuoteEntity {
-    return new MarketQuoteEntity(
+  static toEntity(prismaQuote: Quote): QuoteEntity {
+    return new QuoteEntity(
       prismaQuote.id,
       prismaQuote.ticker,
       prismaQuote.description,

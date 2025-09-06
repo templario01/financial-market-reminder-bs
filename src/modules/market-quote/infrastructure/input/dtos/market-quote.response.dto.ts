@@ -2,7 +2,7 @@ import { Exclude } from 'class-transformer';
 import { MarketQuotePriceResponseDto } from './market-quote-price.response.dto';
 
 @Exclude()
-export class MarketQuoteResponseDto {
+export class QuoteResponseDto {
   @Exclude()
   readonly id: string;
   @Exclude()
