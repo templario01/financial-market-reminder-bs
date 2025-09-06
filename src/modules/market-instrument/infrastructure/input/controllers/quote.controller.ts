@@ -1,18 +1,18 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { GetEtfInformationUseCase } from '../../../application/get-etf-price.use-case';
 import { GetEtfRequestDto } from '../dtos/get-etf.request.dto';
-import { MarketEtfResponseDto } from '../dtos/etf.response.dto';
+import { GetQuoteInformationUseCase } from '../../../application/get-quote-information.use-case';
+import { MarketQuoteResponseDto } from '../dtos/market-quote.response.dto';
 
 @Controller('quote')
 export class QuoteController {
   constructor(
-    private readonly getEtfInformationUseCase: GetEtfInformationUseCase,
+    private readonly getQuoteInformationUseCase: GetQuoteInformationUseCase,
   ) {}
 
   @Get(':ticker')
-  async getEtfInformation(
+  async getQuoteInformation(
     @Param() params: GetEtfRequestDto,
-  ): Promise<MarketEtfResponseDto> {
-    return this.getEtfInformationUseCase.execute(params.ticker);
+  ): Promise<MarketQuoteResponseDto> {
+    return this.getQuoteInformationUseCase.execute(params.ticker);
   }
 }

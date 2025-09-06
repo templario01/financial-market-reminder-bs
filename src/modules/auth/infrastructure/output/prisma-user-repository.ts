@@ -16,7 +16,6 @@ export class PrismaUserRepository implements IUserRepository {
         email: data.email,
         password: data.encryptedPassword,
         alias: data.alias,
-        hasActiveNotifications: data.hasActiveNotifications,
         authProviders: [AuthProviderEntity.LOCAL],
       },
     });

@@ -8,7 +8,6 @@ export class PrismaUserMapper {
       email: user.email,
       alias: user.alias,
       isActive: user.isActive,
-      hasActiveNotifications: user.hasActiveNotifications,
       phoneNumber: user.phoneNumber,
       encryptedPassword: user.password,
     } as UserEntity);

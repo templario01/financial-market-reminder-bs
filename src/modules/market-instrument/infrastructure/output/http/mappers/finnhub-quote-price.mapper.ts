@@ -1,10 +1,10 @@
 import { plainToInstance } from 'class-transformer';
 import { FinnhubQuoteDto } from '../dtos/finnhub-quote.response.dto';
-import { MarketQuoteEntity } from '../../../../domain/entities/market-quote.entity';
+import { MarketQuotePriceEntity } from '../../../../domain/entities/market-quote-price.entity';
 
-export class FinnhubQuoteResponseMapper {
-  static toEntity(dto: FinnhubQuoteDto): MarketQuoteEntity {
-    return plainToInstance(MarketQuoteEntity, {
+export class FinnhubQuotePriceResponseMapper {
+  static toEntity(dto: FinnhubQuoteDto): MarketQuotePriceEntity {
+    return plainToInstance(MarketQuotePriceEntity, {
       currentPrice: dto.c,
       change: dto.d,
       percentChange: dto.dp,
@@ -13,6 +13,6 @@ export class FinnhubQuoteResponseMapper {
       open: dto.o,
       previousClose: dto.pc,
       lastUpdated: new Date(dto.t),
-    } as MarketQuoteEntity);
+    } as MarketQuotePriceEntity);
   }
 }

@@ -1,12 +1,13 @@
+import { MarketQuotePriceEntity } from './market-quote-price.entity';
+
 export class MarketQuoteEntity {
   constructor(
-    public readonly currentPrice: number,
-    public readonly change: number,
-    public readonly percentChange: number,
-    public readonly high: number,
-    public readonly low: number,
-    public readonly open: number,
-    public readonly previousClose: number,
-    public readonly lastUpdated: Date,
+    public ticker: string,
+    public description: string,
+    public type: string,
+    public id: string,
+    public price?: MarketQuotePriceEntity,
   ) {}
 }
+
+export type ExternalMarketQuoteEntity = Omit<MarketQuoteEntity, 'id' | 'price'>;

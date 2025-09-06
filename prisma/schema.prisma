@@ -14,19 +14,31 @@ datasource db {
 }
 
 model User {
-  id                     String              @id @default(auto()) @map("_id") @db.ObjectId
-  email                  String              @unique
-  password               String?
-  phoneNumber            String?             @map("phone_number")
-  alias                  String?
-  authProviders          AuthProvider[]      @default([LOCAL]) @map("auth_providers")
-  hasActiveNotifications Boolean             @default(false) @map("has_active_notifications")
-  createdAt              DateTime            @default(now()) @map("created_at")
-  updatedAt              DateTime            @default(now()) @updatedAt @map("updated_at")
-  isActive               Boolean             @default(true)
-  favoriteQuotes         UserFavoriteQuote[]
+  id               String              @id @default(auto()) @map("_id") @db.ObjectId
+  email            String              @unique
+  password         String?
+  phoneNumber      String?             @unique @map("phone_number")
+  alias            String?
+  authProviders    AuthProvider[]      @default([LOCAL]) @map("auth_providers")
+  createdAt        DateTime            @default(now()) @map("created_at")
+  updatedAt        DateTime            @default(now()) @updatedAt @map("updated_at")
+  isActive         Boolean             @default(true)
+  favoriteQuotes   UserFavoriteQuote[]
+  UserNotification UserNotification[]
 
   @@map("users")
+}
+
+model UserNotification {
+  id       String               @id @default(auto()) @map("_id") @db.ObjectId
+  userId   String               @db.ObjectId
+  type     NotificationProvider
+  isActive Boolean              @default(false)
+  user     User                 @relation(fields: [userId], references: [id])
+
+  @@unique([userId, type])
+  @@index([userId])
+  @@map("user_notifications")
 }
 
 model VerificationCode {
@@ -41,30 +53,43 @@ model VerificationCode {
 }
 
 model UserFavoriteQuote {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId        String   @db.ObjectId
-  quoteTickerId String
-  createdAt     DateTime @default(now())
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  quoteId   String   @db.ObjectId
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, quoteTickerId])
+  @@unique([userId, quoteId])
   @@map("user_favorite_quotes")
+}
+
+model Quote {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  ticker      String       @unique @map("ticker")
+  description String
+  type        String
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @default(now()) @map("updated_at")
+  prices      QuotePrice[]
+
+  @@map("quotes")
 }
 
 model QuotePrice {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  tickerId      String
-  currentPrice  Float
+  quoteId       String   @map("quote_id") @db.ObjectId
+  currentPrice  Float    @map("current_price")
   change        Float
-  percentChange Float
+  percentChange Float    @map("percent_change")
   high          Float
   low           Float
   open          Float
-  previousClose Float
-  lastUpdated   DateTime @default(now())
-  createdAt     DateTime @default(now())
+  previousClose Float    @map("previoud_close")
+  lastUpdate    DateTime @default(now()) @map("last_update")
+  createdAt     DateTime @default(now()) @map("created_at")
+  quote         Quote    @relation(fields: [quoteId], references: [id])
 
-  @@index([tickerId, lastUpdated])
+  @@index([quoteId, createdAt])
   @@map("quote_prices")
 }
 
@@ -72,4 +97,10 @@ enum AuthProvider {
   LOCAL
   GOOGLE
   FACEBOOK
+}
+
+enum NotificationProvider {
+  EMAIL
+  PUSH
+  WHATSAPP
 }

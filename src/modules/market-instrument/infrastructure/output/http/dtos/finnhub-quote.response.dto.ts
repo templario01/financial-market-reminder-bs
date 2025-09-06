@@ -9,6 +9,18 @@ export type FinnhubQuoteDto = {
   readonly t: number;
 };
 
-export type FinnhubQuoteResponseDto = {
-  readonly data: FinnhubQuoteDto;
+export type FinnhubSymbolInformationDto = {
+  readonly description: string;
+  readonly displaySymbol: string;
+  readonly symbol: string;
+  readonly type: string;
+};
+
+export type FinnhubSymbolDto = {
+  readonly count: number;
+  readonly result: FinnhubSymbolInformationDto[];
+};
+
+export type FinnhubApiResponseDto<T> = {
+  readonly data: T;
 };
