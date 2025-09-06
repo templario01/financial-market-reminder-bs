@@ -1,5 +1,5 @@
 import { FinnhubSymbolInformationDto } from '../dtos/finnhub-quote.response.dto';
-import { ExternalQuoteEntity } from '../../../../domain/entities/market-quote.entity';
+import { ExternalQuoteEntity } from '../../../../domain/entities/quote.entity';
 
 export class FinnhubQuoteInformationMapper {
   static toEntity(data: FinnhubSymbolInformationDto): ExternalQuoteEntity {

@@ -1,7 +1,7 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { GetQuoteRequestDto } from '../dtos/get-etf.request.dto';
+import { GetQuoteRequestDto } from '../dtos/get-quote.request.dto';
 import { GetQuoteInformationUseCase } from '../../../application/get-quote-information.use-case';
-import { QuoteResponseDto } from '../dtos/market-quote.response.dto';
+import { QuoteResponseDto } from '../dtos/quote.response.dto';
 
 @Controller('quote')
 export class QuoteController {

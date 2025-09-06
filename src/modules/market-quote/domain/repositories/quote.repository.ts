@@ -1,8 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {
-  ExternalQuoteEntity,
-  QuoteEntity,
-} from '../entities/market-quote.entity';
+import { ExternalQuoteEntity, QuoteEntity } from '../entities/quote.entity';
 
 @Injectable()
 export abstract class QuoteRepository {

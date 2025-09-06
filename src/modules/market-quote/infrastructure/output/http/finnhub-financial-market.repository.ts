@@ -14,10 +14,10 @@ import {
   FinnhubQuoteDto,
   FinnhubSymbolDto,
 } from './dtos/finnhub-quote.response.dto';
-import { QuotePriceEntity } from '../../../domain/entities/quote-price.entity';
+import { ExternalQuotePriceEntity } from '../../../domain/entities/quote-price.entity';
 import { FinnhubQuotePriceResponseMapper } from './mappers/finnhub-quote-price.mapper';
 import { FinnhubQuoteInformationMapper } from './mappers/finnhub-quote-information.mapper';
-import { ExternalQuoteEntity } from '../../../domain/entities/market-quote.entity';
+import { ExternalQuoteEntity } from '../../../domain/entities/quote.entity';
 
 @Injectable()
 export class FinnhubFinancialMarketRepository
@@ -37,7 +37,7 @@ export class FinnhubFinancialMarketRepository
     this.apiUrl = apiUrl;
   }
 
-  async getQuotePrice(ticker: string): Promise<QuotePriceEntity> {
+  async getQuotePrice(ticker: string): Promise<ExternalQuotePriceEntity> {
     const url = `${this.apiUrl}/quote?symbol=${ticker}&token=${this.apiKey}`;
     return firstValueFrom(
       this.httpService.get(url).pipe(

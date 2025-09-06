@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { QuoteRepository } from '../domain/repositories/quote.repository';
 import { FinancialMarketRepository } from '../domain/repositories/financial-market.repository';
-import { QuoteEntity } from '../domain/entities/market-quote.entity';
+import { QuoteEntity } from '../domain/entities/quote.entity';
 import { plainToInstance } from 'class-transformer';
 
 @Injectable()

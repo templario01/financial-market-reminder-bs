@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { QuotePriceEntity } from '../entities/quote-price.entity';
-import { ExternalQuoteEntity } from '../entities/market-quote.entity';
+import { ExternalQuotePriceEntity } from '../entities/quote-price.entity';
+import { ExternalQuoteEntity } from '../entities/quote.entity';
 
 @Injectable()
 export abstract class FinancialMarketRepository {
-  abstract getQuotePrice(ticker: string): Promise<QuotePriceEntity>;
+  abstract getQuotePrice(ticker: string): Promise<ExternalQuotePriceEntity>;
   abstract getQuoteInformation(
     ticker: string,
   ): Promise<ExternalQuoteEntity | null>;

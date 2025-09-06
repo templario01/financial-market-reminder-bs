@@ -1,7 +1,7 @@
 import { Exclude, Expose } from 'class-transformer';
 
 @Exclude()
-export class MarketQuotePriceResponseDto {
+export class QuotePriceResponseDto {
   @Expose()
   currentPrice: number;
 

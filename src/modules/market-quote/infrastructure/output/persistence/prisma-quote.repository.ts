@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../../../core/database/prisma.service';
-import { PrismaQuoteMapper } from './mappers/prisma-quote.mapper';
+import { QuoteEntityMapper } from './mappers/quote-entity.mapper';
 import {
   ExternalQuoteEntity,
   QuoteEntity,
-} from '../../../domain/entities/market-quote.entity';
+} from '../../../domain/entities/quote.entity';
 import { QuoteRepository } from '../../../domain/repositories/quote.repository';
 
 @Injectable()
@@ -19,14 +19,15 @@ export class PrismaQuoteRepository implements QuoteRepository {
         type: quote.type,
       },
     });
-    return PrismaQuoteMapper.toEntity(newQuote);
+    return QuoteEntityMapper.toEntity(newQuote);
   }
 
   async findByTicker(ticker: string): Promise<QuoteEntity | null> {
     const quote = await this.prisma.quote.findUnique({
       where: { ticker },
     });
-    return quote ? PrismaQuoteMapper.toEntity(quote) : null;
+    console.log(quote);
+    return quote ? QuoteEntityMapper.toEntity(quote) : null;
   }
 
   async findManyByTickerLetters(word: string): Promise<QuoteEntity[]> {
@@ -38,6 +39,6 @@ export class PrismaQuoteRepository implements QuoteRepository {
         },
       },
     });
-    return quotes.map((quote) => PrismaQuoteMapper.toEntity(quote));
+    return quotes.map((quote) => QuoteEntityMapper.toEntity(quote));
   }
 }
