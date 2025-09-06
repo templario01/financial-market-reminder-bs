@@ -5,15 +5,16 @@ import {
   ExternalQuoteEntity,
   QuoteEntity,
 } from '../../../domain/entities/quote.entity';
-import { QuoteRepository } from '../../../domain/repositories/quote.repository';
+import { IQuoteRepository } from '../../../domain/repositories/quote.repository';
 
 @Injectable()
-export class PrismaQuoteRepository implements QuoteRepository {
+export class PrismaQuoteRepository implements IQuoteRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(quote: ExternalQuoteEntity): Promise<QuoteEntity> {
     const newQuote = await this.prisma.quote.create({
       data: {
+        imageUrl: quote.imageUrl,
         description: quote.description,
         ticker: quote.ticker,
         type: quote.type,
@@ -26,7 +27,6 @@ export class PrismaQuoteRepository implements QuoteRepository {
     const quote = await this.prisma.quote.findUnique({
       where: { ticker },
     });
-    console.log(quote);
     return quote ? QuoteEntityMapper.toEntity(quote) : null;
   }
 

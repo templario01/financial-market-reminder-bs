@@ -9,6 +9,7 @@ export class QuoteEntityMapper {
       ticker: data.ticker,
       description: data.description,
       type: data.type,
+      imageUrl: data.imageUrl,
     } as QuoteEntity);
   }
 }

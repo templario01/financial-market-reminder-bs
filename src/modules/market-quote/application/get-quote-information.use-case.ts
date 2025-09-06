@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { QuoteRepository } from '../domain/repositories/quote.repository';
-import { FinancialMarketRepository } from '../domain/repositories/financial-market.repository';
+import { IQuoteRepository } from '../domain/repositories/quote.repository';
+import { IFinancialMarketRepository } from '../domain/repositories/financial-market.repository';
 import { QuoteEntity } from '../domain/entities/quote.entity';
 import { plainToInstance } from 'class-transformer';
+import { GetQuoteImageUseCase } from './get-quote-image.use-case';
 
 @Injectable()
 export class GetQuoteInformationUseCase {
   constructor(
-    private readonly financialMarketRepository: FinancialMarketRepository,
-    private readonly quoteRepository: QuoteRepository,
+    private readonly financialMarketRepository: IFinancialMarketRepository,
+    private readonly getQuoteImageUseCase: GetQuoteImageUseCase,
+    private readonly quoteRepository: IQuoteRepository,
   ) {}
 
   async execute(ticker: string): Promise<QuoteEntity> {
@@ -16,7 +18,7 @@ export class GetQuoteInformationUseCase {
     const quotePrice =
       await this.financialMarketRepository.getQuotePrice(tickerUc);
     let quote = await this.quoteRepository.findByTicker(tickerUc);
-
+    console.log(quote);
     if (!quote) {
       quote = await this.registerQuote(tickerUc);
     }
@@ -30,6 +32,12 @@ export class GetQuoteInformationUseCase {
     if (!quoteInformation) {
       throw new Error(`No quote information found for ticker: ${ticker}`);
     }
-    return this.quoteRepository.create(quoteInformation);
+
+    const imageUrl = await this.getQuoteImageUseCase.execute(ticker);
+
+    return this.quoteRepository.create({
+      ...quoteInformation,
+      imageUrl,
+    });
   }
 }

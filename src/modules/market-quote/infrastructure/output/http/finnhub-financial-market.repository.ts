@@ -4,7 +4,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { FinancialMarketRepository } from '../../../domain/repositories/financial-market.repository';
+import { IFinancialMarketRepository } from '../../../domain/repositories/financial-market.repository';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom, map, tap } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
@@ -21,7 +21,7 @@ import { ExternalQuoteEntity } from '../../../domain/entities/quote.entity';
 
 @Injectable()
 export class FinnhubFinancialMarketRepository
-  implements FinancialMarketRepository
+  implements IFinancialMarketRepository
 {
   private readonly logger = new Logger(FinnhubFinancialMarketRepository.name);
   private readonly apiUrl: string;

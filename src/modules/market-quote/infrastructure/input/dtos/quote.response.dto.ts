@@ -12,5 +12,7 @@ export class QuoteResponseDto {
   @Expose()
   readonly type: string;
   @Expose()
+  readonly imageUrl?: string | null;
+  @Expose()
   readonly price?: QuotePriceResponseDto;
 }
