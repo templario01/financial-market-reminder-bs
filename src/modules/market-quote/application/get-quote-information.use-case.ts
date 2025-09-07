@@ -18,12 +18,15 @@ export class GetQuoteInformationUseCase {
     const quotePrice =
       await this.financialMarketRepository.getQuotePrice(tickerUc);
     let quote = await this.quoteRepository.findByTicker(tickerUc);
-    console.log(quote);
+
     if (!quote) {
       quote = await this.registerQuote(tickerUc);
     }
 
-    return plainToInstance(QuoteEntity, { ...quote, price: quotePrice });
+    return plainToInstance(QuoteEntity, {
+      ...quote,
+      price: quotePrice,
+    } as QuoteEntity);
   }
 
   private async registerQuote(ticker: string): Promise<QuoteEntity> {

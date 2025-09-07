@@ -4,6 +4,7 @@ import { ExternalQuoteEntity, QuoteEntity } from '../entities/quote.entity';
 @Injectable()
 export abstract class IQuoteRepository {
   abstract create(quote: ExternalQuoteEntity): Promise<QuoteEntity>;
+  abstract findById(id: string): Promise<QuoteEntity | null>;
   abstract findByTicker(ticker: string): Promise<QuoteEntity | null>;
   abstract findManyByTickerLetters(word: string): Promise<QuoteEntity[]>;
 }

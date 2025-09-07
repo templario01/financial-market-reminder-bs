@@ -58,20 +58,22 @@ model UserFavoriteQuote {
   quoteId   String   @db.ObjectId
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quote     Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
 
   @@unique([userId, quoteId])
   @@map("user_favorite_quotes")
 }
 
 model Quote {
-  id          String       @id @default(auto()) @map("_id") @db.ObjectId
-  ticker      String       @unique
-  description String
-  imageUrl    String?      @map("image_url")
-  type        String
-  createdAt   DateTime     @default(now()) @map("created_at")
-  updatedAt   DateTime     @default(now()) @updatedAt @map("updated_at")
-  prices      QuotePrice[]
+  id                String              @id @default(auto()) @map("_id") @db.ObjectId
+  ticker            String              @unique
+  description       String
+  imageUrl          String?             @map("image_url")
+  type              String
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @default(now()) @updatedAt @map("updated_at")
+  prices            QuotePrice[]
+  UserFavoriteQuote UserFavoriteQuote[]
 
   @@map("quotes")
 }

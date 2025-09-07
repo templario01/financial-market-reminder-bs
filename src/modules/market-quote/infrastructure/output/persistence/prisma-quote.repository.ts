@@ -11,6 +11,13 @@ import { IQuoteRepository } from '../../../domain/repositories/quote.repository'
 export class PrismaQuoteRepository implements IQuoteRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  async findById(id: string): Promise<QuoteEntity | null> {
+    const quote = await this.prisma.quote.findUnique({
+      where: { id },
+    });
+    return quote ? QuoteEntityMapper.toEntity(quote) : null;
+  }
+
   async create(quote: ExternalQuoteEntity): Promise<QuoteEntity> {
     const newQuote = await this.prisma.quote.create({
       data: {
