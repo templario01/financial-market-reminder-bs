@@ -8,6 +8,7 @@ import {
 } from './core/settings/settings.configuration';
 import { AuthModule } from './modules/auth/auth.module';
 import { HealthController } from './core/common/modules/mail/infrastructure/controllers/health.controller';
+import { AccountManagementModule } from './modules/account-management/account-management.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { HealthController } from './core/common/modules/mail/infrastructure/cont
       validate: (config) => validateEnvs(config, ConfigVariables),
     }),
     MarketInstrumentModule,
+    AccountManagementModule,
     AuthModule,
   ],
   controllers: [HealthController],

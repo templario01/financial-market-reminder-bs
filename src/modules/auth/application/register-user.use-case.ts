@@ -15,7 +15,7 @@ export class RegisterUserUseCase {
   ) {}
 
   async execute(data: CreateUserDto): Promise<UserEntity> {
-    const { email, password, alias, verificationCode } = data;
+    const { email, password, verificationCode } = data;
     const [user] = await Promise.all([
       this.userRepository.findUserByEmail(email),
       this.validateAuthVerificationCodeUseCase.execute(email, verificationCode),
@@ -25,7 +25,7 @@ export class RegisterUserUseCase {
     }
     const encryptedPassword = await this.authService.encryptPassword(password);
     const newUser = await this.userRepository.createUser(
-      new CreateUserEntity(email, encryptedPassword, undefined, alias),
+      new CreateUserEntity(email, encryptedPassword),
     );
     return newUser;
   }

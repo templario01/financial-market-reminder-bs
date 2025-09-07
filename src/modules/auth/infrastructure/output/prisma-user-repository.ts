@@ -3,7 +3,7 @@ import { PrismaService } from '../../../../core/database/prisma.service';
 import { IUserRepository } from '../../domain/repositories/user-repository';
 import { AuthProviderEntity } from '../../domain/entities/auth-provider.entity';
 import { UserEntity } from '../../domain/entities/user.entity';
-import { PrismaUserMapper } from './mappers/prisma-user.mapper';
+import { UserEntityMapper } from './mappers/user-entity.mapper';
 import { CreateUserEntity } from '../../domain/entities/create-user.entity';
 
 @Injectable()
@@ -15,11 +15,13 @@ export class PrismaUserRepository implements IUserRepository {
       data: {
         email: data.email,
         password: data.encryptedPassword,
-        alias: data.alias,
+        account: {
+          create: {},
+        },
         authProviders: [AuthProviderEntity.LOCAL],
       },
     });
-    return PrismaUserMapper.toEntity(user);
+    return UserEntityMapper.toEntity(user);
   }
 
   async createUserByExternalProvider(
@@ -29,10 +31,13 @@ export class PrismaUserRepository implements IUserRepository {
     const user = await this.prisma.user.create({
       data: {
         email,
+        account: {
+          create: {},
+        },
         authProviders: [AuthProviderEntity[authProvider]],
       },
     });
-    return PrismaUserMapper.toEntity(user);
+    return UserEntityMapper.toEntity(user);
   }
 
   async findUserByEmail(email: string): Promise<UserEntity | null> {
@@ -45,6 +50,24 @@ export class PrismaUserRepository implements IUserRepository {
       },
     });
 
-    return user ? PrismaUserMapper.toEntity(user) : null;
+    return user ? UserEntityMapper.toEntity(user) : null;
+  }
+
+  async findUserByEmailIncludingAccount(
+    email: string,
+  ): Promise<UserEntity | null> {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        email: {
+          equals: email,
+          mode: 'insensitive',
+        },
+      },
+      include: {
+        account: true,
+      },
+    });
+
+    return user ? UserEntityMapper.toEntity(user) : null;
   }
 }

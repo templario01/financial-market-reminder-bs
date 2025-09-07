@@ -14,30 +14,41 @@ datasource db {
 }
 
 model User {
-  id               String              @id @default(auto()) @map("_id") @db.ObjectId
-  email            String              @unique
-  password         String?
-  phoneNumber      String?             @unique @map("phone_number")
-  alias            String?
-  authProviders    AuthProvider[]      @default([LOCAL]) @map("auth_providers")
-  createdAt        DateTime            @default(now()) @map("created_at")
-  updatedAt        DateTime            @default(now()) @updatedAt @map("updated_at")
-  isActive         Boolean             @default(true)
-  favoriteQuotes   UserFavoriteQuote[]
-  UserNotification UserNotification[]
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  email         String         @unique
+  password      String?
+  phoneNumber   String?        @unique @map("phone_number")
+  authProviders AuthProvider[] @default([LOCAL]) @map("auth_providers")
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @default(now()) @updatedAt @map("updated_at")
+  account       Account?
 
   @@map("users")
 }
 
-model UserNotification {
-  id       String               @id @default(auto()) @map("_id") @db.ObjectId
-  userId   String               @db.ObjectId
-  type     NotificationProvider
-  isActive Boolean              @default(false)
-  user     User                 @relation(fields: [userId], references: [id])
+model Account {
+  id               String              @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt        DateTime            @default(now()) @map("created_at")
+  updatedAt        DateTime            @default(now()) @updatedAt @map("updated_at")
+  alias            String?
+  isActive         Boolean             @default(true)
+  userId           String              @unique @db.ObjectId
+  favoriteQuotes   UserFavoriteQuote[]
+  userNotification UserNotification[]
+  user             User                @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, type])
-  @@index([userId])
+  @@map("accounts")
+}
+
+model UserNotification {
+  id        String               @id @default(auto()) @map("_id") @db.ObjectId
+  accountId String               @db.ObjectId
+  type      NotificationProvider
+  isActive  Boolean              @default(false)
+  account   Account              @relation(fields: [accountId], references: [id])
+
+  @@unique([accountId, type])
+  @@index([accountId])
   @@map("user_notifications")
 }
 
@@ -54,13 +65,13 @@ model VerificationCode {
 
 model UserFavoriteQuote {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
   quoteId   String   @db.ObjectId
   createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId String   @db.ObjectId
+  account   Account  @relation(fields: [accountId], references: [id])
   quote     Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, quoteId])
+  @@unique([accountId, quoteId])
   @@map("user_favorite_quotes")
 }
 

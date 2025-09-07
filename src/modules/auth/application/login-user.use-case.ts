@@ -13,7 +13,8 @@ export class LoginUserUseCase {
 
   async execute(data: LoginDto): Promise<AccessTokenEntity> {
     const { email, password } = data;
-    const user = await this.userRepository.findUserByEmail(email);
+    const user =
+      await this.userRepository.findUserByEmailIncludingAccount(email);
     if (!user) {
       throw new UnauthorizedException(
         'Correo electrónico o contraseña no válidos',
@@ -29,7 +30,7 @@ export class LoginUserUseCase {
       );
     }
 
-    const payload = { username: email, sub: user.id };
+    const payload = { username: email, sub: user.account?.id };
     return this.authService.createAccessToken(payload);
   }
 }

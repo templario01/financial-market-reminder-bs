@@ -3,7 +3,7 @@ import { PrismaService } from '../../../core/database/prisma.service';
 import { CreateUserEntity } from '../../auth/domain/entities/create-user.entity';
 import { UserEntity } from '../../auth/domain/entities/user.entity';
 import { AuthProviderEntity } from '../../auth/domain/entities/auth-provider.entity';
-import { PrismaUserMapper } from '../../auth/infrastructure/output/mappers/prisma-user.mapper';
+import { UserEntityMapper } from '../../auth/infrastructure/output/mappers/user-entity.mapper';
 
 @Injectable()
 export class PrismaUserFavoriteQuoteRepository {
@@ -14,11 +14,9 @@ export class PrismaUserFavoriteQuoteRepository {
       data: {
         email: data.email,
         password: data.encryptedPassword,
-        alias: data.alias,
-
         authProviders: [AuthProviderEntity.LOCAL],
       },
     });
-    return PrismaUserMapper.toEntity(user);
+    return UserEntityMapper.toEntity(user);
   }
 }

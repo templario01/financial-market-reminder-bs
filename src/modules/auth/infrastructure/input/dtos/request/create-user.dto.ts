@@ -1,10 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsAlphanumeric,
-  IsEmail,
-  IsNotEmpty,
-  IsOptional,
-} from 'class-validator';
+import { IsAlphanumeric, IsEmail, IsNotEmpty } from 'class-validator';
 
 export class CreateUserDto {
   @ApiProperty({ example: 'user@gmail.com' })
@@ -18,8 +13,4 @@ export class CreateUserDto {
   @IsAlphanumeric()
   @IsNotEmpty()
   readonly verificationCode: string;
-  @ApiProperty({ example: 'vitocho' })
-  @IsOptional()
-  @IsNotEmpty()
-  readonly alias?: string;
 }
