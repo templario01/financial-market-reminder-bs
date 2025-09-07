@@ -7,6 +7,7 @@ import {
   ConfigVariables,
 } from './core/settings/settings.configuration';
 import { AuthModule } from './modules/auth/auth.module';
+import { HealthController } from './core/common/modules/mail/infrastructure/controllers/health.controller';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { AuthModule } from './modules/auth/auth.module';
     MarketInstrumentModule,
     AuthModule,
   ],
-  controllers: [],
+  controllers: [HealthController],
   providers: [],
 })
 export class AppModule {}
