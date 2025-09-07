@@ -1,4 +1,5 @@
 export type GlobalConfig = {
+  readonly port: number;
   readonly finnhub: FunnhubConfig;
   readonly auth: AuthConfig;
   readonly mail: MainConfig;

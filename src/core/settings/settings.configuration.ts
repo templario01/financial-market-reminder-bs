@@ -7,6 +7,7 @@ import {
 import { GlobalConfig } from './settings.model';
 
 export class ConfigVariables {
+  readonly PORT: string;
   @IsString()
   @IsNotEmpty()
   @IsDefined()
@@ -45,6 +46,7 @@ export class ConfigVariables {
 }
 
 export const configuration = (): GlobalConfig => ({
+  port: +process.env.PORT! || 3000,
   finnhub: {
     apiUrl: process.env.FINNHUB_API_URL!,
     apiKey: process.env.FINNHUB_API_KEY!,
