@@ -1,6 +1,8 @@
 export type GlobalConfig = {
   readonly port: number;
   readonly finnhub: FunnhubConfig;
+  readonly alphavantage: AlphavantageConfig;
+  readonly financialModeling: FinancialModelingConfig;
   readonly auth: AuthConfig;
   readonly mail: MainConfig;
 };
@@ -24,3 +26,12 @@ export type MainConfig = {
   readonly port: number;
   readonly sender: string;
 };
+
+export type AlphavantageConfig = {
+  readonly apiUrl: string;
+  readonly apiKey: string;
+};
+
+export class FinancialModelingConfig {
+  readonly apiUrl: string;
+}

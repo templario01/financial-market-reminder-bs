@@ -19,6 +19,18 @@ export class ConfigVariables {
   @IsString()
   @IsNotEmpty()
   @IsDefined()
+  readonly ALPHAVANTAGE_API_URL: string;
+  @IsString()
+  @IsNotEmpty()
+  @IsDefined()
+  readonly ALPHAVANTAGE_API_KEY: string;
+  @IsString()
+  @IsNotEmpty()
+  @IsDefined()
+  readonly FINANCIAL_MODELING_API_URL: string;
+  @IsString()
+  @IsNotEmpty()
+  @IsDefined()
   readonly JWT_SECRET: string;
   @IsString()
   @IsNotEmpty()
@@ -50,6 +62,13 @@ export const configuration = (): GlobalConfig => ({
   finnhub: {
     apiUrl: process.env.FINNHUB_API_URL!,
     apiKey: process.env.FINNHUB_API_KEY!,
+  },
+  alphavantage: {
+    apiUrl: process.env.ALPHAVANTAGE_API_URL!,
+    apiKey: process.env.ALPHAVANTAGE_API_KEY!,
+  },
+  financialModeling: {
+    apiUrl: process.env.FINANCIAL_MODELING_API_URL!,
   },
   auth: {
     secret: process.env.JWT_SECRET!,
