@@ -6,8 +6,8 @@ export class QuoteEntity {
     public ticker: string,
     public description: string,
     public type: string,
-    public imageUrl?: string | null,
     public price?: QuotePriceEntity,
+    public imageUrl?: string | null,
   ) {}
 }
 

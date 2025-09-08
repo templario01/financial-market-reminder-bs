@@ -9,12 +9,17 @@ import {
 import { AuthModule } from './modules/auth/auth.module';
 import { HealthController } from './core/common/modules/mail/infrastructure/controllers/health.controller';
 import { AccountManagementModule } from './modules/account-management/account-management.module';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       load: [configuration],
       validate: (config) => validateEnvs(config, ConfigVariables),
+    }),
+    CacheModule.register({
+      ttl: 5000,
+      isGlobal: true,
     }),
     MarketInstrumentModule,
     AccountManagementModule,
