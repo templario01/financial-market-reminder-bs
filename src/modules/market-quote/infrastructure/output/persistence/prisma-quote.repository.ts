@@ -48,4 +48,9 @@ export class PrismaQuoteRepository implements IQuoteRepository {
     });
     return quotes.map((quote) => QuoteEntityMapper.toEntity(quote));
   }
+
+  async findAll(): Promise<QuoteEntity[]> {
+    const quotes = await this.prisma.quote.findMany();
+    return quotes.map((quote) => QuoteEntityMapper.toEntity(quote));
+  }
 }

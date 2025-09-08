@@ -23,8 +23,13 @@ export class GetQuoteInformationUseCase {
       quote = await this.registerQuote(tickerUc);
     }
 
+    const [recommendations] = await Promise.all([
+      this.financialMarketRepository.getRecommendation(tickerUc),
+    ]);
+
     return plainToInstance(QuoteEntity, {
       ...quote,
+      recommendations,
       price: quotePrice,
     } as QuoteEntity);
   }

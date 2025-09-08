@@ -18,9 +18,12 @@ import { TimeSerieElementQuoteEntityMapper } from './mappers/time-serie-element-
 import { MetadataQuoteEntityMapper } from './mappers/metadata-quote-entity.mapper';
 import { plainToInstance } from 'class-transformer';
 import { QuoteTimeSerieEntity } from '../../../domain/entities/time-serie-quote.entity';
+import { IFinancialMarketHistoricRepository } from '../../../domain/repositories/financial-market-historic.repository';
 
 @Injectable()
-export class AlphavantageRepository {
+export class AlphavantageRepository
+  implements IFinancialMarketHistoricRepository
+{
   private readonly logger = new Logger(AlphavantageRepository.name);
   private readonly apiUrl: string;
   private readonly apiKey: string;

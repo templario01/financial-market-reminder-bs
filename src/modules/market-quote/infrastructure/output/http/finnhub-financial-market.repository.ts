@@ -18,6 +18,9 @@ import { ExternalQuotePriceEntity } from '../../../domain/entities/quote-price.e
 import { FinnhubQuotePriceResponseMapper } from './mappers/finnhub-quote-price.mapper';
 import { FinnhubQuoteInformationMapper } from './mappers/finnhub-quote-information.mapper';
 import { ExternalQuoteEntity } from '../../../domain/entities/quote.entity';
+import { StockRecommendationResponseDto } from './dtos/stock-recommendation.response.dto';
+import { StockRecommendationEntityMapper } from './mappers/stock-recommendation-entity.mapper';
+import { StockRecommendationEntity } from '../../../domain/entities/stock-recommendation.entity';
 
 @Injectable()
 export class FinnhubFinancialMarketRepository
@@ -78,6 +81,28 @@ export class FinnhubFinancialMarketRepository
           if (!quote) return null;
           return FinnhubQuoteInformationMapper.toEntity(quote);
         }),
+      ),
+    );
+  }
+
+  async getRecommendation(stock: string): Promise<StockRecommendationEntity[]> {
+    const url = `${this.apiUrl}/stock/recommendation?symbol=${stock}&exchange=US&token=${this.apiKey}`;
+    return firstValueFrom(
+      this.httpService.get(url).pipe(
+        catchError((error) => {
+          this.logger.error(
+            `Error fetching market quote information ${error.message}`,
+          );
+          throw new InternalServerErrorException(
+            'Failed to fetch market quote information',
+          );
+        }),
+        map(
+          ({ data }: FinnhubApiResponseDto<StockRecommendationResponseDto[]>) =>
+            data.map((stockRecommendation) =>
+              StockRecommendationEntityMapper.toEntity(stockRecommendation),
+            ),
+        ),
       ),
     );
   }

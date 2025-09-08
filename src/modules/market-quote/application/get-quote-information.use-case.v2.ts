@@ -25,11 +25,12 @@ export class GetQuoteInformationV2UseCase {
       quote = await this.registerQuote(tickerUc);
     }
 
-    const [weeklyTimeserie, monthlyTimeserie, dailyTimeserie] =
+    const [weeklyTimeserie, monthlyTimeserie, dailyTimeserie, recommendations] =
       await Promise.all([
         this.financialMarketHistoricRepository.getWeeklyTimeSeries(tickerUc),
         this.financialMarketHistoricRepository.getMonthlyTimeSeries(tickerUc),
         this.financialMarketHistoricRepository.getDailyTimeSeries(tickerUc),
+        this.financialMarketRepository.getRecommendation(tickerUc),
       ]);
 
     return plainToInstance(QuoteEntity, {
@@ -38,6 +39,7 @@ export class GetQuoteInformationV2UseCase {
       weeklyTimeserie,
       monthlyTimeserie,
       dailyTimeserie,
+      recommendations,
     } as QuoteEntity);
   }
 

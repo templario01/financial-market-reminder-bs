@@ -1,6 +1,7 @@
 import { Exclude, Expose } from 'class-transformer';
 import { QuotePriceResponseDto } from './quote-price.response.dto';
 import { QuoteTimeSerieResponseDto } from './quote-time-serie.response.dto';
+import { StockRecommendationResponseDto } from './stock-recommendation.response';
 
 @Exclude()
 export class QuoteResponseDto {
@@ -22,4 +23,6 @@ export class QuoteResponseDto {
   readonly weeklyTimeserie?: QuoteTimeSerieResponseDto;
   @Expose()
   readonly monthlyTimeserie?: QuoteTimeSerieResponseDto;
+  @Expose()
+  readonly recommendations?: StockRecommendationResponseDto[];
 }

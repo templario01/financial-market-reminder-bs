@@ -7,4 +7,5 @@ export abstract class IQuoteRepository {
   abstract findById(id: string): Promise<QuoteEntity | null>;
   abstract findByTicker(ticker: string): Promise<QuoteEntity | null>;
   abstract findManyByTickerLetters(word: string): Promise<QuoteEntity[]>;
+  abstract findAll(): Promise<QuoteEntity[]>;
 }

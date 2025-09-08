@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../../../core/database/prisma.service';
 import { ExternalQuotePriceEntity } from '../../../domain/entities/quote-price.entity';
+import { CreateQuotePriceEntity } from '../../../../market-reminder/domain/entities/create-quote-price.entitiy';
+import { Prisma } from '@prisma/client';
+import { IQuotePriceRepository } from '../../../domain/repositories/quote-price.respository';
 
 @Injectable()
-export class PrismaQuotePriceRepository {
+export class PrismaQuotePriceRepository implements IQuotePriceRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async findByQuoteId(quoteId: string) {
@@ -21,5 +24,22 @@ export class PrismaQuotePriceRepository {
       },
     });
     return quotePrice;
+  }
+
+  async createMany(quotes: CreateQuotePriceEntity[]): Promise<void> {
+    await this.prisma.quotePrice.createMany({
+      data: quotes.map(
+        ({ quoteId, price }): Prisma.QuotePriceCreateManyInput => ({
+          quoteId,
+          change: price.change,
+          currentPrice: price.currentPrice,
+          high: price.high,
+          low: price.low,
+          open: price.open,
+          percentChange: price.percentChange,
+          previousClose: price.previousClose,
+        }),
+      ),
+    });
   }
 }

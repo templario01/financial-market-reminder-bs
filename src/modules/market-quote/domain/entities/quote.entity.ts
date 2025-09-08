@@ -1,4 +1,5 @@
 import { QuotePriceEntity } from './quote-price.entity';
+import { StockRecommendationEntity } from './stock-recommendation.entity';
 import { QuoteTimeSerieEntity } from './time-serie-quote.entity';
 
 export class QuoteEntity {
@@ -12,6 +13,7 @@ export class QuoteEntity {
     public dailyTimeserie?: QuoteTimeSerieEntity,
     public weeklyTimeserie?: QuoteTimeSerieEntity,
     public monthlyTimeserie?: QuoteTimeSerieEntity,
+    public recommendations?: StockRecommendationEntity[],
   ) {}
 }
 
