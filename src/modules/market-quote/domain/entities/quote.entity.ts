@@ -1,4 +1,5 @@
 import { QuotePriceEntity } from './quote-price.entity';
+import { QuoteTimeSerieEntity } from './time-serie-quote.entity';
 
 export class QuoteEntity {
   constructor(
@@ -8,6 +9,9 @@ export class QuoteEntity {
     public type: string,
     public price?: QuotePriceEntity,
     public imageUrl?: string | null,
+    public dailyTimeserie?: QuoteTimeSerieEntity,
+    public weeklyTimeserie?: QuoteTimeSerieEntity,
+    public monthlyTimeserie?: QuoteTimeSerieEntity,
   ) {}
 }
 

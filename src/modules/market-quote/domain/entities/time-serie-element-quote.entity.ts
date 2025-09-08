@@ -6,5 +6,7 @@ export class TimeSerieElementQuoteEntity {
     public readonly low: number,
     public readonly close: number,
     public readonly volume: number,
+    public readonly adjustedClose?: number,
+    public readonly dividendAmount?: number,
   ) {}
 }

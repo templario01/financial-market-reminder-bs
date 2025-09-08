@@ -1,23 +1,21 @@
 import { plainToInstance } from 'class-transformer';
-import { AdjustedTimeSerieElementQuoteEntity } from '../../../../domain/entities/adjusted-time-serie-element-quote.entity';
 import {
   DailyTimeSeries,
   AdjustedTimeSeries,
 } from '../dtos/alphavantage.response.dto';
+import { TimeSerieElementQuoteEntity } from '../../../../domain/entities/time-serie-element-quote.entity';
 
 export class TimeSerieElementQuoteEntityMapper {
-  static toEntities(
-    timeSeries: DailyTimeSeries,
-  ): AdjustedTimeSerieElementQuoteEntity[];
+  static toEntities(timeSeries: DailyTimeSeries): TimeSerieElementQuoteEntity[];
   static toEntities(
     timeSeries: AdjustedTimeSeries,
-  ): AdjustedTimeSerieElementQuoteEntity[];
+  ): TimeSerieElementQuoteEntity[];
 
   static toEntities(
     timeSeries: DailyTimeSeries | AdjustedTimeSeries,
-  ): AdjustedTimeSerieElementQuoteEntity[] {
+  ): TimeSerieElementQuoteEntity[] {
     return Object.entries(timeSeries).map(([date, values]) =>
-      plainToInstance(AdjustedTimeSerieElementQuoteEntity, {
+      plainToInstance(TimeSerieElementQuoteEntity, {
         date,
         open: +values['1. open'],
         high: +values['2. high'],
@@ -32,7 +30,7 @@ export class TimeSerieElementQuoteEntityMapper {
           : {
               volume: +values['5. volume'],
             }),
-      } as AdjustedTimeSerieElementQuoteEntity),
+      } as TimeSerieElementQuoteEntity),
     );
   }
 }

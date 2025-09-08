@@ -13,11 +13,15 @@ import { GetQuoteImageUseCase } from './application/get-quote-image.use-case';
 import { IQuoteImageRepository } from './domain/repositories/quote-image.repository';
 import { FinancialModelingRepository } from './infrastructure/output/http/financial-modeling.repository';
 import { GetQuotesBySearchUseCase } from './application/get-quotes-by-search.use-case';
+import { AlphavantageRepository } from './infrastructure/output/http/alphavantage.repository';
+import { IFinancialMarketHistoricRepository } from './domain/repositories/financial-market-historic.repository';
+import { GetQuoteInformationV2UseCase } from './application/get-quote-information.use-case.v2';
 
 export const useCases = [
   GetQuoteInformationUseCase,
   GetQuoteImageUseCase,
   GetQuotesBySearchUseCase,
+  GetQuoteInformationV2UseCase,
 ];
 const repositories = [
   {
@@ -31,6 +35,10 @@ const repositories = [
   {
     provide: IQuoteImageRepository,
     useClass: FinancialModelingRepository,
+  },
+  {
+    provide: IFinancialMarketHistoricRepository,
+    useClass: AlphavantageRepository,
   },
 ];
 

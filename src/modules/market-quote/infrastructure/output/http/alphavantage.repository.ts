@@ -56,7 +56,7 @@ export class AlphavantageRepository {
   }
 
   async getWeeklyTimeSeries(ticker: string): Promise<QuoteTimeSerieEntity> {
-    const url = `${this.apiUrl}/query?function=TIME_SERIES_${TimeSeries.WEEKLY}&symbol=${ticker}&apikey=${this.apiKey}`;
+    const url = `${this.apiUrl}/query?function=TIME_SERIES_${TimeSeries.WEEKLY_ADJUSTED}&symbol=${ticker}&apikey=${this.apiKey}`;
     return firstValueFrom(
       this.httpService.get(url).pipe(
         catchError((error) => {
@@ -78,7 +78,7 @@ export class AlphavantageRepository {
   }
 
   async getMonthlyTimeSeries(ticker: string): Promise<QuoteTimeSerieEntity> {
-    const url = `${this.apiUrl}/query?function=TIME_SERIES_${TimeSeries.MONTHLY}&symbol=${ticker}&apikey=${this.apiKey}`;
+    const url = `${this.apiUrl}/query?function=TIME_SERIES_${TimeSeries.MONTHLY_ADJUSTED}&symbol=${ticker}&apikey=${this.apiKey}`;
     return firstValueFrom(
       this.httpService.get(url).pipe(
         catchError((error) => {
