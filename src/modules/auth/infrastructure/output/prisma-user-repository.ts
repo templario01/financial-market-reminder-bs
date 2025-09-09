@@ -5,6 +5,7 @@ import { AuthProviderEntity } from '../../domain/entities/auth-provider.entity';
 import { UserEntity } from '../../domain/entities/user.entity';
 import { UserEntityMapper } from './mappers/user-entity.mapper';
 import { CreateUserEntity } from '../../domain/entities/create-user.entity';
+import { AuthProvider } from '@prisma/client';
 
 @Injectable()
 export class PrismaUserRepository implements IUserRepository {
@@ -34,7 +35,7 @@ export class PrismaUserRepository implements IUserRepository {
         account: {
           create: {},
         },
-        authProviders: [AuthProviderEntity[authProvider]],
+        authProviders: [AuthProvider[AuthProviderEntity[authProvider]]],
       },
     });
     return UserEntityMapper.toEntity(user);

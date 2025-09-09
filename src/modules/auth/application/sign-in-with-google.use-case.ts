@@ -26,11 +26,7 @@ export class SignInWithGoogleUseCase {
       );
     }
 
-    const payload = {
-      username: user.email,
-      sub: user.id,
-    };
-
+    const payload = { username: googleUser.email, sub: user.account?.id };
     return this.authService.createAccessToken(payload);
   }
 }
