@@ -12,7 +12,7 @@ export class FinnhubQuotePriceResponseMapper {
       low: dto.l,
       open: dto.o,
       previousClose: dto.pc,
-      lastUpdated: new Date(dto.t),
+      lastUpdated: new Date(),
     } as ExternalQuotePriceEntity);
   }
 }

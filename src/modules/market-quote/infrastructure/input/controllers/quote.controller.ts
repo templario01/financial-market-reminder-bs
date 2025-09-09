@@ -24,7 +24,7 @@ export class QuoteController {
     return this.getQuotesBySearchUseCase.execute(word);
   }
 
-  @CacheTTL(CacheTime.THIRTY_SECONDS)
+  @CacheTTL(CacheTime.ONE_MINUTE)
   @Get(':ticker')
   async getQuoteInformation(
     @Param() params: GetQuoteRequestDto,

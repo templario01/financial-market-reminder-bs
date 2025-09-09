@@ -99,7 +99,6 @@ model QuotePrice {
   low           Float
   open          Float
   previousClose Float    @map("previoud_close")
-  lastUpdate    DateTime @default(now()) @map("last_update")
   createdAt     DateTime @default(now()) @map("created_at")
   quote         Quote    @relation(fields: [quoteId], references: [id])
 
