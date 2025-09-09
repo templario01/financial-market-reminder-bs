@@ -18,7 +18,9 @@ export class SignInWithGoogleUseCase {
     const googleUser =
       await this.googleAuthService.verifyIdToken(googleTokenId);
 
-    let user = await this.userRepository.findUserByEmail(googleUser.email);
+    let user = await this.userRepository.findUserByEmailIncludingAccount(
+      googleUser.email,
+    );
 
     if (!user) {
       user = await this.userRepository.createUserByExternalProvider(
