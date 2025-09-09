@@ -22,7 +22,6 @@ COPY --chown=node:node package*.json ./
 COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modules
 COPY --chown=node:node . .
 
-RUN npx prisma db push
 RUN npx prisma generate
 RUN npm run build
 ENV NODE_ENV=production
@@ -37,4 +36,6 @@ FROM node:22-alpine3.22 AS production
 
 COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
 COPY --chown=node:node --from=build /usr/src/app/dist ./dist
+
+RUN npx prisma db push
 CMD [ "node", "dist/main.js" ]
