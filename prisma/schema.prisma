@@ -17,7 +17,7 @@ model User {
   id            String         @id @default(auto()) @map("_id") @db.ObjectId
   email         String         @unique
   password      String?
-  phoneNumber   String?        @unique @map("phone_number")
+  phoneNumber   String?        @map("phone_number")
   authProviders AuthProvider[] @default([LOCAL]) @map("auth_providers")
   createdAt     DateTime       @default(now()) @map("created_at")
   updatedAt     DateTime       @default(now()) @updatedAt @map("updated_at")
@@ -65,9 +65,9 @@ model VerificationCode {
 
 model UserFavoriteQuote {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  quoteId   String   @db.ObjectId
+  quoteId   String   @db.ObjectId @map("quote_id")
   createdAt DateTime @default(now())
-  accountId String   @db.ObjectId
+  accountId String   @db.ObjectId @map("account_id")
   account   Account  @relation(fields: [accountId], references: [id])
   quote     Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
 

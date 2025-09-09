@@ -27,7 +27,7 @@ export class AuthController {
 
   @ApiOperation({ summary: 'register or signin user with google idToken' })
   @HttpCode(HttpStatus.OK)
-  @Post('register/google')
+  @Post('/google')
   async googleSignIn(
     @Body() request: SignInGoogleDto,
   ): Promise<AccessTokenDto> {
