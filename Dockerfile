@@ -36,6 +36,7 @@ FROM node:22-alpine3.22 AS production
 
 COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
 COPY --chown=node:node --from=build /usr/src/app/dist ./dist
+COPY --chown=node:node --from=build /usr/src/app/prisma ./prisma
 
 RUN npx prisma db push
 CMD [ "node", "dist/main.js" ]
