@@ -14,7 +14,7 @@ export class SyncPricesForAllQuotesUseCase {
     private readonly quoteRepository: IQuoteRepository,
   ) {}
 
-  @Cron('0 16 * * 1-5')
+  @Cron('0 21 * * 1-5')
   async execute(): Promise<void> {
     const quotes = await this.quoteRepository.findAll();
     this.logger.log(`Found ${quotes.length} quotes to update prices.`);

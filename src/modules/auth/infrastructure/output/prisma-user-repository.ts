@@ -37,6 +37,7 @@ export class PrismaUserRepository implements IUserRepository {
         },
         authProviders: [AuthProvider[AuthProviderEntity[authProvider]]],
       },
+      include: { account: true },
     });
     return UserEntityMapper.toEntity(user);
   }
