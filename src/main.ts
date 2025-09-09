@@ -16,7 +16,8 @@ async function bootstrap() {
     }),
   );
   app.enableCors({
-    origin: 'https://v0-stock-reminder-web.vercel.app',
+    origin: '*',
+    methods: 'GET,PUT,PATCH,POST,DELETE',
   });
   const port = app.get(ConfigService).get<number>('PORT')!;
   const logger = new Logger('Bootstrap');
