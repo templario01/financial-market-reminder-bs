@@ -33,20 +33,13 @@ USER node
 ###################
 
 FROM node:22-alpine3.22 AS production
+WORKDIR /usr/src/app
 
 COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
 COPY --chown=node:node --from=build /usr/src/app/dist ./dist
 COPY --chown=node:node --from=build /usr/src/app/prisma ./prisma
+COPY --chown=node:node entrypoint.sh ./entrypoint.sh
 
-# Puedes usar un archivo de entrada, como un script shell, para ejecutar varios comandos.
-# Por ejemplo, crea un archivo llamado entrypoint.sh con tus comandos:
-
-# entrypoint.sh
-# #!/bin/sh
-# npx prisma db push
-# node dist/main.js
-
-# Luego, en el Dockerfile:
-COPY --chown=node:node entrypoint.sh ./
 RUN chmod +x entrypoint.sh
+
 CMD ["./entrypoint.sh"]
