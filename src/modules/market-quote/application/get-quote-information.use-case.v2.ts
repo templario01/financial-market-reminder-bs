@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { IQuoteRepository } from '../domain/repositories/quote.repository';
 import { IFinancialMarketRepository } from '../domain/repositories/financial-market.repository';
 import { QuoteEntity } from '../domain/entities/quote.entity';
@@ -8,6 +12,7 @@ import { IFinancialMarketHistoricRepository } from '../domain/repositories/finan
 
 @Injectable()
 export class GetQuoteInformationV2UseCase {
+  private readonly logger = new Logger(GetQuoteInformationV2UseCase.name);
   constructor(
     private readonly financialMarketRepository: IFinancialMarketRepository,
     private readonly getQuoteImageUseCase: GetQuoteImageUseCase,
@@ -27,10 +32,44 @@ export class GetQuoteInformationV2UseCase {
 
     const [weeklyTimeserie, monthlyTimeserie, dailyTimeserie, recommendations] =
       await Promise.all([
-        this.financialMarketHistoricRepository.getWeeklyTimeSeries(tickerUc),
-        this.financialMarketHistoricRepository.getMonthlyTimeSeries(tickerUc),
-        this.financialMarketHistoricRepository.getDailyTimeSeries(tickerUc),
-        this.financialMarketRepository.getRecommendation(tickerUc),
+        this.financialMarketHistoricRepository
+          .getWeeklyTimeSeries(tickerUc)
+          .catch((error) => {
+            if (!(error instanceof InternalServerErrorException)) {
+              this.logger.error({
+                msg: `Error parsing weekly time series: ${error.message}`,
+                err: error,
+              });
+            }
+            return null;
+          }),
+        this.financialMarketHistoricRepository
+          .getMonthlyTimeSeries(tickerUc)
+          .catch((error) => {
+            this.logger.error({
+              msg: `Error parsing monthly time series: ${error.message}`,
+              err: error,
+            });
+            return null;
+          }),
+        this.financialMarketHistoricRepository
+          .getDailyTimeSeries(tickerUc)
+          .catch((error) => {
+            this.logger.error({
+              msg: `Error parsing daily time series: ${error.message}`,
+              err: error,
+            });
+            return null;
+          }),
+        this.financialMarketRepository
+          .getRecommendation(tickerUc)
+          .catch((error) => {
+            this.logger.error({
+              msg: `Error parsing recommendations: ${error.message}`,
+              err: error,
+            });
+            return null;
+          }),
       ]);
 
     return plainToInstance(QuoteEntity, {
