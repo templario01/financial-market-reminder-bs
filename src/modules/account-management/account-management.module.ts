@@ -12,11 +12,15 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import { IUserRepository } from '../auth/domain/repositories/user-repository';
 import { PrismaUserRepository } from '../auth/infrastructure/output/prisma-user-repository';
+import { UpdateAccountSettingsUseCase } from './application/update-account-settings.use-case';
+import { IAccountRepository } from './domain/repositories/account.repository';
+import { PrismaAccountRepository } from './infrastructure/output/prisma-account.repository';
 
 const useCases = [
   GetFavoriteQuotesUseCase,
   AddQuoteToFavoriteUseCase,
   RemoveQuoteFromFavoriteUseCase,
+  UpdateAccountSettingsUseCase,
 ];
 
 const repositories = [
@@ -31,6 +35,10 @@ const repositories = [
   {
     provide: IUserRepository,
     useClass: PrismaUserRepository,
+  },
+  {
+    provide: IAccountRepository,
+    useClass: PrismaAccountRepository,
   },
 ];
 

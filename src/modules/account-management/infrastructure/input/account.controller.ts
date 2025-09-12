@@ -8,6 +8,9 @@ import * as Type from '../../../../core/common/types/types';
 import { AuthGuard } from '../../../auth/infrastructure/guards/auth.guard';
 import { CreateFavoriteQuoteRequestDto } from './dtos/create-favorite-quote.request.dto';
 import { DeleteFavoriteQuoteRequestDto } from './dtos/delete-favorite-quote.request.dto';
+import { UpdateAccountSettingsUseCase } from '../../application/update-account-settings.use-case';
+import { UpdateAccountRequestDto } from './dtos/update-account.request.dto';
+import { AccountResponseDto } from './dtos/account.response.dto';
 
 @Controller('account')
 export class AccountController {
@@ -15,7 +18,17 @@ export class AccountController {
     private readonly addQuoteToFavorite: AddQuoteToFavoriteUseCase,
     private readonly removeQuoteFromFavorite: RemoveQuoteFromFavoriteUseCase,
     private readonly getFavoriteQuotes: GetFavoriteQuotesUseCase,
+    private readonly updateAccountSettings: UpdateAccountSettingsUseCase,
   ) {}
+
+  @UseGuards(AuthGuard)
+  @Post()
+  async updateAccount(
+    @CurrentUser() user: Type.SessionData,
+    @Body() body: UpdateAccountRequestDto,
+  ): Promise<AccountResponseDto> {
+    return this.updateAccountSettings.execute(user.sub, body);
+  }
 
   @UseGuards(AuthGuard)
   @Get('favorite-quote')

@@ -27,29 +27,32 @@ model User {
 }
 
 model Account {
-  id               String              @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt        DateTime            @default(now()) @map("created_at")
-  updatedAt        DateTime            @default(now()) @updatedAt @map("updated_at")
-  alias            String?
-  isActive         Boolean             @default(true)
-  userId           String              @unique @db.ObjectId
-  favoriteQuotes   UserFavoriteQuote[]
-  userNotification UserNotification[]
-  user             User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                    String                 @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt             DateTime               @default(now()) @map("created_at")
+  updatedAt             DateTime               @default(now()) @updatedAt @map("updated_at")
+  alias                 String?
+  isActive              Boolean                @default(true)
+  userId                String                 @unique @map("user_id") @db.ObjectId
+  notificationProviders NotificationProvider[] @default([EMAIL]) @map("notification_providers")
+  notificationSchedules NotificationSchedule[]
+  favoriteQuotes        UserFavoriteQuote[]
+  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("accounts")
 }
 
-model UserNotification {
-  id        String               @id @default(auto()) @map("_id") @db.ObjectId
-  accountId String               @db.ObjectId
-  type      NotificationProvider
-  isActive  Boolean              @default(false)
-  account   Account              @relation(fields: [accountId], references: [id])
+model NotificationSchedule {
+  id           String             @id @default(auto()) @map("_id") @db.ObjectId
+  isActive     Boolean            @default(false)
+  executionDay ScheduleExecuteDay @map("execution_day")
+  period       SchedulePeriod
+  createdAt    DateTime           @default(now()) @map("created_at")
+  updatedAt    DateTime           @default(now()) @updatedAt @map("updated_at")
+  accountId    String             @db.ObjectId
+  account      Account            @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
-  @@unique([accountId, type])
-  @@index([accountId])
-  @@map("user_notifications")
+  @@unique([accountId, executionDay, period])
+  @@map("notification_schedules")
 }
 
 model VerificationCode {
@@ -65,9 +68,9 @@ model VerificationCode {
 
 model UserFavoriteQuote {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  quoteId   String   @db.ObjectId @map("quote_id")
-  createdAt DateTime @default(now())
-  accountId String   @db.ObjectId @map("account_id")
+  quoteId   String   @map("quote_id") @db.ObjectId
+  createdAt DateTime @default(now()) @map("created_at")
+  accountId String   @map("account_id") @db.ObjectId
   account   Account  @relation(fields: [accountId], references: [id])
   quote     Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
 
@@ -114,6 +117,26 @@ enum AuthProvider {
 
 enum NotificationProvider {
   EMAIL
-  PUSH
+  PUSH_NOTIFICATION
   WHATSAPP
+}
+
+enum SchedulePeriod {
+  DAILY
+  WEEKLY
+  TWO_WEEKS
+  MONTHLY
+}
+
+enum ScheduleExecuteDay {
+  EVERY_MONDAY
+  EVERY_TUESDAY
+  EVERY_WEDNESDAY
+  EVERY_THURSDAY
+  EVERY_FRIDAY
+  EVERY_SATURDAY
+  EVERY_SUNDAY
+  EVERY_FIRST_AND_FIFTEENTH_OF_MONTH
+  EVERY_FIRST_DAY_OF_MONTH
+  EVERY_LAST_DAY_OF_MONTH
 }
