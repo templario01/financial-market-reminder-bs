@@ -1,4 +1,5 @@
 import { NotificationProvider } from '../../../../core/common/enums/account.enum';
+import { UserEntity } from '../../../auth/domain/entities/user.entity';
 import {
   CreateNotificationScheduleEntity,
   NotificationScheduleEntity,
@@ -12,7 +13,9 @@ export class AccountEntity {
     public readonly createdAt: Date,
     public readonly notificationProviders?: NotificationProvider[] | null,
     public readonly notificationSchedules?: NotificationScheduleEntity[] | null,
+    public readonly favoriteQuotes?: string[] | null,
     public readonly alias?: string | null,
+    public readonly user?: UserEntity | null,
   ) {}
 }
 

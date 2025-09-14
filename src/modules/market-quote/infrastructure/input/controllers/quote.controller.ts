@@ -32,7 +32,7 @@ export class QuoteController {
     return this.getQuoteInformationUseCase.execute(params.ticker);
   }
 
-  @CacheTTL(CacheTime.THIRTY_SECONDS)
+  @CacheTTL(60)
   @Get('v2/:ticker')
   async getQuoteInformationV2(
     @Param() params: GetQuoteRequestDto,

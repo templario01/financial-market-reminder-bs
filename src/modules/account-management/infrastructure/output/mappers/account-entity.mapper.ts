@@ -3,17 +3,17 @@ import { AccountEntity } from '../../../domain/entities/account.entity';
 import { Account } from '@prisma/client';
 import { NotificationProvider } from '../../../../../core/common/enums/account.enum';
 import { NotificationScheduleEntityMapper } from './notification-schedule.entity.mapper';
-import { AccountsWithNotificationSchedules } from '../../../../../core/database/types/user.type';
+import { AccountWithRelations } from '../../../../../core/database/types/user.type';
 
 export class AccountEntityMapper {
   static toEntity(data: Account): AccountEntity;
-  static toEntity(data: AccountsWithNotificationSchedules): AccountEntity;
-  static toEntity(
-    data: Account | AccountsWithNotificationSchedules,
-  ): AccountEntity {
+  static toEntity(data: AccountWithRelations): AccountEntity;
+  static toEntity(data: Account | AccountWithRelations): AccountEntity {
     return plainToInstance(AccountEntity, {
       id: data.id,
       createdAt: data.createdAt,
+      isActive: data.isActive,
+      alias: data.alias,
       notificationProviders: [
         ...data.notificationProviders.map(
           (provider) => NotificationProvider[provider],
@@ -25,9 +25,12 @@ export class AccountEntityMapper {
               NotificationScheduleEntityMapper.toEntity(schedule),
             )
           : [],
-      isActive: data.isActive,
+      user: 'user' in data && data.user ? data.user : null,
+      favoriteQuotes:
+        'favoriteQuotes' in data && data.favoriteQuotes
+          ? data.favoriteQuotes.map((favoriteQuote) => favoriteQuote.quoteId)
+          : [],
       userId: data.userId,
-      alias: data.alias,
     } as AccountEntity);
   }
 }

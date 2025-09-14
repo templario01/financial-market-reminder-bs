@@ -5,7 +5,7 @@
  * making it easier to select appropriate cache durations for different use cases.
  *
  * @remarks
- * The values are specified in milliseconds.
+ * The values are specified in seconds.
  *
  * @example
  * ```typescript
@@ -14,12 +14,15 @@
  * ```
  */
 export enum CacheTime {
-  FIVE_SECONDS = 5000,
-  TEN_SECONDS = 10000,
-  THIRTY_SECONDS = 30000,
-  ONE_MINUTE = 60000,
-  FIVE_MINUTES = 300000,
-  TEN_MINUTES = 600000,
-  THIRTY_MINUTES = 1800000,
-  ONE_HOUR = 3600000,
+  FIVE_SECONDS = 5,
+  TEN_SECONDS = 10,
+  THIRTY_SECONDS = 30,
+  ONE_MINUTE = 60,
+  FIVE_MINUTES = 300,
+  TEN_MINUTES = 600,
+  THIRTY_MINUTES = 1800,
+  ONE_HOUR = 3600,
+  SIX_HOURS = 21600,
+  TWELVE_HOURS = 43200,
+  ONE_DAY = 86400,
 }

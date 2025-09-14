@@ -12,6 +12,7 @@ import { AccountManagementModule } from './modules/account-management/account-ma
 import { CacheModule } from '@nestjs/cache-manager';
 import { ScheduleModule } from '@nestjs/schedule';
 import { MarketReminderModule } from './modules/market-reminder/market-reminder.module';
+import { CacheFactory } from './core/common/cache/cache-factory/cache-factory';
 
 @Module({
   imports: [
@@ -19,9 +20,9 @@ import { MarketReminderModule } from './modules/market-reminder/market-reminder.
       load: [configuration],
       validate: (config) => validateEnvs(config, ConfigVariables),
     }),
-    CacheModule.register({
-      ttl: 5000,
+    CacheModule.registerAsync({
       isGlobal: true,
+      useClass: CacheFactory,
     }),
     ScheduleModule.forRoot(),
     MarketInstrumentModule,

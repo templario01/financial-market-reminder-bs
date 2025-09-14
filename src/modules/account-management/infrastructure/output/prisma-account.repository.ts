@@ -15,6 +15,25 @@ import { IAccountRepository } from '../../domain/repositories/account.repository
 export class PrismaAccountRepository implements IAccountRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
+  async getAccountsWithNotificationSchedules(): Promise<AccountEntity[]> {
+    const accounts = await this.prismaService.account.findMany({
+      where: {
+        notificationSchedules: {
+          some: {
+            isActive: true,
+          },
+        },
+      },
+      include: {
+        notificationSchedules: {
+          where: { isActive: true },
+        },
+        user: true,
+      },
+    });
+
+    return accounts.map((account) => AccountEntityMapper.toEntity(account));
+  }
   async update(
     accountId: string,
     data: UpdateAccountEntity,

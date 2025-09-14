@@ -7,4 +7,5 @@ export abstract class IAccountRepository {
     accountId: string,
     data: UpdateAccountEntity,
   ): Promise<AccountEntity>;
+  abstract getAccountsWithNotificationSchedules(): Promise<AccountEntity[]>;
 }

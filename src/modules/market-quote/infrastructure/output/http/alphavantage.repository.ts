@@ -1,5 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import {
+  Inject,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -19,6 +20,36 @@ import { MetadataQuoteEntityMapper } from './mappers/metadata-quote-entity.mappe
 import { plainToInstance } from 'class-transformer';
 import { QuoteTimeSerieEntity } from '../../../domain/entities/time-serie-quote.entity';
 import { IFinancialMarketHistoricRepository } from '../../../domain/repositories/financial-market-historic.repository';
+import { Cache } from '@nestjs/cache-manager';
+import { CacheTime } from '../../../../../core/common/enums/cache-ttl';
+
+export function Cacheable(time: CacheTime): MethodDecorator {
+  const injectCacheManager = Inject('CACHE_MANAGER');
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor,
+  ) {
+    const originalMethod = descriptor.value;
+    injectCacheManager(target, 'cacheManager');
+
+    descriptor.value = async function (...args: any[]) {
+      const cacheManager: Cache = this.cacheManager;
+      const cacheKey = `${propertyKey}:${args.join(':')}`;
+      const cached = await cacheManager.get<QuoteTimeSerieEntity>(cacheKey);
+      const logger = new Logger('CacheableDecorator');
+      if (cached) {
+        logger.log(`Cache hit for key: ${cacheKey}`);
+        return cached;
+      }
+      logger.log(`Cache miss for key: ${cacheKey}`);
+      const result = await originalMethod.apply(this, args);
+      await cacheManager.set(cacheKey, result, time);
+      return result;
+    };
+    return descriptor;
+  };
+}
 
 @Injectable()
 export class AlphavantageRepository
@@ -36,6 +67,7 @@ export class AlphavantageRepository
     this.apiUrl = apiUrl;
     this.apiKey = apiKey;
   }
+  @Cacheable(CacheTime.ONE_DAY)
   async getDailyTimeSeries(ticker: string): Promise<QuoteTimeSerieEntity> {
     const url = `${this.apiUrl}/query?function=TIME_SERIES_${TimeSeries.DAILY}&symbol=${ticker}&apikey=${this.apiKey}`;
     return firstValueFrom(
@@ -58,6 +90,7 @@ export class AlphavantageRepository
     );
   }
 
+  @Cacheable(CacheTime.ONE_DAY)
   async getWeeklyTimeSeries(ticker: string): Promise<QuoteTimeSerieEntity> {
     const url = `${this.apiUrl}/query?function=TIME_SERIES_${TimeSeries.WEEKLY_ADJUSTED}&symbol=${ticker}&apikey=${this.apiKey}`;
     return firstValueFrom(
@@ -80,6 +113,7 @@ export class AlphavantageRepository
     );
   }
 
+  @Cacheable(CacheTime.ONE_DAY)
   async getMonthlyTimeSeries(ticker: string): Promise<QuoteTimeSerieEntity> {
     const url = `${this.apiUrl}/query?function=TIME_SERIES_${TimeSeries.MONTHLY_ADJUSTED}&symbol=${ticker}&apikey=${this.apiKey}`;
     return firstValueFrom(

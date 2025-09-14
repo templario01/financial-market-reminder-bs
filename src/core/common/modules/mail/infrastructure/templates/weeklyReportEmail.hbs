@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{title}}</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f7f7f7;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 600px;
+        margin: 30px auto;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        padding: 24px;
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 24px;
+      }
+      .card {
+        background: #f1f4fa;
+        border-radius: 6px;
+        padding: 16px;
+        margin-bottom: 18px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      }
+      .ticker {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #2a3b8f;
+      }
+      .price {
+        font-size: 1.1em;
+        margin: 8px 0;
+      }
+      .change {
+        font-size: 1em;
+        margin-bottom: 8px;
+      }
+      .positive {
+        color: #2e7d32;
+      }
+      .negative {
+        color: #c62828;
+      }
+      .chart {
+        text-align: center;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h2>{{title}}</h2>
+        <p>{{description}}</p>
+      </div>
+      {{#each quotes}}
+        <div class="card">
+          <div class="ticker">{{ticker}}</div>
+          <div class="price">
+            <strong>Precio actual:</strong> ${{currentPrice}}<br/>
+            <strong>Precio semana pasada:</strong> ${{lastWeekPrice}}
+          </div>
+          <div class="change {{#if (gt change 0)}}positive{{else}}negative{{/if}}">
+            <strong>Variación:</strong>
+            {{#if (gt change 0)}}▲{{else}}▼{{/if}}
+            ${{change}} ({{percentChange}}%)
+          </div>
+          <div class="chart">
+            <img src="{{linealChartUrl}}" alt="https://quickchart.io/chart?c={%20type:%27line%27,%20data:{%20labels:[%27Lunes%27,%27Martes%27,%27Mi%C3%A9rcoles%27,%27Jueves%27,%27Viernes%27,%27S%C3%A1bado%27,%27Domingo%27],%20datasets:[{%20label:%27Precio%20del%20Activo%27,%20data:[100,105,102,110,108,112,115],%20fill:false,%20borderColor:%27blue%27,%20tension:0.3%20}]%20},%20options:{%20plugins:{%20title:{display:true,text:%27Evoluci%C3%B3n%20del%20precio%20(Lun-Dom)%27}%20}%20}%20}" style="max-width:100%;border-radius:4px;" />
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  </body>
+</html>
