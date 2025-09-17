@@ -146,15 +146,6 @@ export class NotifyQuotationStatsToUsersUseCase {
             return null;
           }),
         this.financialMarketHistoricRepository
-          .getMonthlyTimeSeries(quote.ticker)
-          .catch((error) => {
-            this.logger.error({
-              msg: `Error parsing monthly time series: ${error.message}`,
-              err: error,
-            });
-            return null;
-          }),
-        this.financialMarketHistoricRepository
           .getDailyTimeSeries(quote.ticker)
           .catch((error) => {
             this.logger.error({

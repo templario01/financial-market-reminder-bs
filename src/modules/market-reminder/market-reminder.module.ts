@@ -16,6 +16,7 @@ import { IFinancialMarketHistoricRepository } from '../market-quote/domain/repos
 import { AlphavantageRepository } from '../market-quote/infrastructure/output/http/alphavantage.repository';
 import { IAccountRepository } from '../account-management/domain/repositories/account.repository';
 import { PrismaAccountRepository } from '../account-management/infrastructure/output/prisma-account.repository';
+import { NotifyUserReportCommand } from '../../core/commands/execute-user-notification.command';
 
 const useCases = [
   SyncPricesForAllQuotesUseCase,
@@ -51,6 +52,6 @@ const repositories = [
 
 @Module({
   imports: [PrismaModule, HttpModule, ConfigModule],
-  providers: [...useCases, ...repositories],
+  providers: [...useCases, ...repositories, NotifyUserReportCommand],
 })
 export class MarketReminderModule {}

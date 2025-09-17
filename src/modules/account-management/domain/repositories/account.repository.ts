@@ -8,4 +8,5 @@ export abstract class IAccountRepository {
     data: UpdateAccountEntity,
   ): Promise<AccountEntity>;
   abstract getAccountsWithNotificationSchedules(): Promise<AccountEntity[]>;
+  abstract findById(accountId: string): Promise<AccountEntity | null>;
 }

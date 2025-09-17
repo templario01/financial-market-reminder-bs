@@ -1,7 +1,8 @@
-import { Expose } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import { NotificationProvider } from '../../../../../core/common/enums/account.enum';
 import { NotificationScheduleResponseDto } from './notification-schedule.response';
 
+@Exclude()
 export class AccountResponseDto {
   @Expose()
   id: string;

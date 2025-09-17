@@ -15,12 +15,14 @@ import { PrismaUserRepository } from '../auth/infrastructure/output/prisma-user-
 import { UpdateAccountSettingsUseCase } from './application/update-account-settings.use-case';
 import { IAccountRepository } from './domain/repositories/account.repository';
 import { PrismaAccountRepository } from './infrastructure/output/prisma-account.repository';
+import { GetAccountInformationUseCase } from './application/get-account-information.use-case';
 
 const useCases = [
   GetFavoriteQuotesUseCase,
   AddQuoteToFavoriteUseCase,
   RemoveQuoteFromFavoriteUseCase,
   UpdateAccountSettingsUseCase,
+  GetAccountInformationUseCase,
 ];
 
 const repositories = [

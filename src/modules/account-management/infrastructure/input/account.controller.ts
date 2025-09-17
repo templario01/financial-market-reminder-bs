@@ -11,6 +11,8 @@ import { DeleteFavoriteQuoteRequestDto } from './dtos/delete-favorite-quote.requ
 import { UpdateAccountSettingsUseCase } from '../../application/update-account-settings.use-case';
 import { UpdateAccountRequestDto } from './dtos/update-account.request.dto';
 import { AccountResponseDto } from './dtos/account.response.dto';
+import { GetAccountInformationUseCase } from '../../application/get-account-information.use-case';
+import { plainToInstance } from 'class-transformer';
 
 @Controller('account')
 export class AccountController {
@@ -19,7 +21,17 @@ export class AccountController {
     private readonly removeQuoteFromFavorite: RemoveQuoteFromFavoriteUseCase,
     private readonly getFavoriteQuotes: GetFavoriteQuotesUseCase,
     private readonly updateAccountSettings: UpdateAccountSettingsUseCase,
+    private readonly getAccountInformation: GetAccountInformationUseCase,
   ) {}
+
+  @UseGuards(AuthGuard)
+  @Get()
+  async getAccountInfo(
+    @CurrentUser() user: Type.SessionData,
+  ): Promise<AccountResponseDto> {
+    const account = await this.getAccountInformation.execute(user.sub);
+    return plainToInstance(AccountResponseDto, account as AccountResponseDto);
+  }
 
   @UseGuards(AuthGuard)
   @Post()

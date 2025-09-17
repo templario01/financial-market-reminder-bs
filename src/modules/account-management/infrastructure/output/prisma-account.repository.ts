@@ -34,6 +34,15 @@ export class PrismaAccountRepository implements IAccountRepository {
 
     return accounts.map((account) => AccountEntityMapper.toEntity(account));
   }
+
+  async findById(accountId: string): Promise<AccountEntity | null> {
+    const account = await this.prismaService.account.findUnique({
+      where: { id: accountId, isActive: true },
+      include: { notificationSchedules: true },
+    });
+    return account ? AccountEntityMapper.toEntity(account) : null;
+  }
+
   async update(
     accountId: string,
     data: UpdateAccountEntity,
