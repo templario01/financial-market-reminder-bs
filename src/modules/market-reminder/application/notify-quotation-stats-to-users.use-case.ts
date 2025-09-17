@@ -17,6 +17,9 @@ import {
 } from '../../../core/common/enums/account.enum';
 import { IMailerRepository } from '../../../core/common/modules/mail/domain/repositories/email-repository';
 import { AccountEntity } from '../../account-management/domain/entities/account.entity';
+import { SendEmailNotificationEntity } from '../../../core/common/modules/mail/domain/entities/send-email-notification.entity';
+import { plainToInstance } from 'class-transformer';
+import { roundTo } from '../../../core/common/utils/math-operations';
 
 export type MarketReportQuote = {
   ticker: string;
@@ -58,15 +61,16 @@ export class NotifyQuotationStatsToUsersUseCase {
   })
   async execute(): Promise<void> {
     try {
-      const accounts =
-        await this.accountRepository.getAccountsWithNotificationSchedules();
+      const accounts = await this.accountRepository.getAccountsWithRelations();
       const quotes = await this.quoteRepository.findAll();
+
       const weeklyMarketReport = await this.getWeeklyReportQuotes(quotes);
 
       for (const account of accounts) {
         const accountFavoriteQuoteTickers = quotes
           .filter((quote) => account.favoriteQuotes?.includes(quote.id))
           .map((quote) => quote.ticker);
+
         await this.handleWeeklyReport(
           account,
           accountFavoriteQuoteTickers,
@@ -101,15 +105,27 @@ export class NotifyQuotationStatsToUsersUseCase {
       (quote) => accountQuotes?.includes(quote.ticker),
     );
 
-    await this.mailerRepository.sendEmailNotification({
-      email: account.user?.email as string,
-      subject: 'Reporte Semanal del Mercado',
-      templateId: 'weeklyReportEmail',
-      body: {
-        ...weeklyMarketReport,
-        quotes: accountWeeklyReportQuotes,
-      },
-    });
+    console.log(account.user?.email);
+    console.log(
+      JSON.stringify({
+        body: {
+          ...weeklyMarketReport,
+          quotes: accountWeeklyReportQuotes,
+        },
+      }),
+    );
+
+    await this.mailerRepository.sendEmailNotification(
+      plainToInstance(SendEmailNotificationEntity, {
+        email: account.user?.email as string,
+        subject: 'Reporte Semanal del Mercado',
+        templateId: 'weeklyReportEmail',
+        body: {
+          ...weeklyMarketReport,
+          quotes: accountWeeklyReportQuotes,
+        },
+      } as SendEmailNotificationEntity),
+    );
   }
 
   private compareWeekDayEqualsToExecutionDay(
@@ -169,11 +185,14 @@ export class NotifyQuotationStatsToUsersUseCase {
         ticker: quote.ticker,
         currentPrice: currentWeekDay?.close || 0,
         lastWeekPrice: lastWeekDay?.close || 0,
-        change: (currentWeekDay?.close || 0) - (lastWeekDay?.close || 0),
-        percentChange:
+        change: roundTo(
+          (currentWeekDay?.close || 0) - (lastWeekDay?.close || 0),
+        ),
+        percentChange: roundTo(
           (((currentWeekDay?.close || 0) - (lastWeekDay?.close || 0)) /
             (lastWeekDay?.close || 1)) *
-          100,
+            100,
+        ),
         linealChartUrl: this.generateQuickChartUrl(weekDays),
       };
 

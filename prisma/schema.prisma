@@ -51,7 +51,7 @@ model NotificationSchedule {
   accountId    String             @db.ObjectId
   account      Account            @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
-  @@unique([accountId, executionDay, period])
+  @@unique([accountId, period])
   @@map("notification_schedules")
 }
 

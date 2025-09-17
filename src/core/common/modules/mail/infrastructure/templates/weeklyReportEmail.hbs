@@ -65,11 +65,11 @@
           <div class="ticker">{{ticker}}</div>
           <div class="price">
             <strong>Precio actual:</strong> ${{currentPrice}}<br/>
-            <strong>Precio semana pasada:</strong> ${{lastWeekPrice}}
+            <strong>Precio hace una semana:</strong> ${{lastWeekPrice}}
           </div>
-          <div class="change {{#if (gt change 0)}}positive{{else}}negative{{/if}}">
-            <strong>Variación:</strong>
-            {{#if (gt change 0)}}▲{{else}}▼{{/if}}
+          <div class="change {{#if change}}positive{{else}}negative{{/if}}">
+            <strong>Variación semanal:</strong>
+            {{#if change}}▲{{else}}▼{{/if}}
             ${{change}} ({{percentChange}}%)
           </div>
           <div class="chart">

@@ -15,7 +15,7 @@ import { IAccountRepository } from '../../domain/repositories/account.repository
 export class PrismaAccountRepository implements IAccountRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getAccountsWithNotificationSchedules(): Promise<AccountEntity[]> {
+  async getAccountsWithRelations(): Promise<AccountEntity[]> {
     const accounts = await this.prismaService.account.findMany({
       where: {
         notificationSchedules: {
@@ -25,6 +25,7 @@ export class PrismaAccountRepository implements IAccountRepository {
         },
       },
       include: {
+        favoriteQuotes: true,
         notificationSchedules: {
           where: { isActive: true },
         },
@@ -56,9 +57,8 @@ export class PrismaAccountRepository implements IAccountRepository {
         for (const schedule of data.notificationSchedules) {
           await tx.notificationSchedule.upsert({
             where: {
-              accountId_executionDay_period: {
+              accountId_period: {
                 accountId: accountId,
-                executionDay: ScheduleExecuteDay[schedule.executionDay],
                 period: SchedulePeriod[schedule.period],
               },
             },
