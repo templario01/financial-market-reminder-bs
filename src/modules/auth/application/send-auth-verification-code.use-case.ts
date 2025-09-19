@@ -40,8 +40,9 @@ export class SendAuthVerificationCodeUseCase {
         body: { verificationCode: verificationCode.code },
         templateId: 'confirmationUserEmail',
         subject: 'Código de verificación FM Reminder',
+        fromName: 'Stock Reminder',
         email,
-      }),
+      } as SendEmailNotificationEntity),
     );
   }
 }
