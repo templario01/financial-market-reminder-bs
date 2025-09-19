@@ -10,13 +10,12 @@ import { PrismaModule } from '../../core/database/prisma.module';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
 import { NotifyQuotationStatsToUsersUseCase } from './application/notify-quotation-stats-to-users.use-case';
-import { IMailerRepository } from '../../core/common/modules/mail/domain/repositories/email-repository';
-import { NestMailerRepository } from '../../core/common/modules/mail/infrastructure/nest-mailer.repository';
 import { IFinancialMarketHistoricRepository } from '../market-quote/domain/repositories/financial-market-historic.repository';
 import { AlphavantageRepository } from '../market-quote/infrastructure/output/http/alphavantage.repository';
 import { IAccountRepository } from '../account-management/domain/repositories/account.repository';
 import { PrismaAccountRepository } from '../account-management/infrastructure/output/prisma-account.repository';
 import { NotifyUserReportCommand } from '../../core/commands/execute-user-notification.command';
+import { MailModule } from '../../core/common/modules/mail/mail.module';
 
 const useCases = [
   SyncPricesForAllQuotesUseCase,
@@ -37,10 +36,6 @@ const repositories = [
     useClass: FinnhubFinancialMarketRepository,
   },
   {
-    provide: IMailerRepository,
-    useClass: NestMailerRepository,
-  },
-  {
     provide: IFinancialMarketHistoricRepository,
     useClass: AlphavantageRepository,
   },
@@ -51,7 +46,7 @@ const repositories = [
 ];
 
 @Module({
-  imports: [PrismaModule, HttpModule, ConfigModule],
+  imports: [PrismaModule, HttpModule, ConfigModule, MailModule],
   providers: [...useCases, ...repositories, NotifyUserReportCommand],
 })
 export class MarketReminderModule {}

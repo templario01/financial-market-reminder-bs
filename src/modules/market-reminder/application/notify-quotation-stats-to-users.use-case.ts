@@ -62,7 +62,8 @@ export class NotifyQuotationStatsToUsersUseCase {
   async execute(): Promise<void> {
     try {
       const accounts = await this.accountRepository.getAccountsWithRelations();
-      const quotes = await this.quoteRepository.findAll();
+      const resp = await this.quoteRepository.findAll();
+      const quotes = [resp[0], resp[1], resp[2]]; // TODO: Quitar esto y descomentar la linea de abajo
 
       const weeklyMarketReport = await this.getWeeklyReportQuotes(quotes);
 
@@ -118,6 +119,7 @@ export class NotifyQuotationStatsToUsersUseCase {
     await this.mailerRepository.sendEmailNotification(
       plainToInstance(SendEmailNotificationEntity, {
         email: account.user?.email as string,
+        fromName: 'Stock Reminder',
         subject: 'Reporte Semanal del Mercado',
         templateId: 'weeklyReportEmail',
         body: {

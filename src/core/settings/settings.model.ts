@@ -4,7 +4,7 @@ export type GlobalConfig = {
   readonly alphavantage: AlphavantageConfig;
   readonly financialModeling: FinancialModelingConfig;
   readonly auth: AuthConfig;
-  readonly mail: MainConfig;
+  readonly mail: MailConfig;
 };
 
 export type FunnhubConfig = {
@@ -20,7 +20,8 @@ export type AuthConfig = {
   };
 };
 
-export type MainConfig = {
+export type MailConfig = {
+  readonly apiUrl: string;
   readonly host: string;
   readonly password: string;
   readonly port: number;

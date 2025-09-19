@@ -3,6 +3,7 @@ export class SendEmailNotificationEntity {
     public readonly templateId: string,
     public readonly email: string,
     public readonly subject: string,
+    public readonly fromName: string,
     public readonly body: Record<string, any>,
   ) {}
 }

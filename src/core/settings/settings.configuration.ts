@@ -55,6 +55,10 @@ export class ConfigVariables {
   @IsNotEmpty()
   @IsDefined()
   readonly MAIL_SENDER: string;
+  @IsString()
+  @IsNotEmpty()
+  @IsDefined()
+  readonly MAIL_API_URL: string;
 }
 
 export const configuration = (): GlobalConfig => ({
@@ -78,6 +82,7 @@ export const configuration = (): GlobalConfig => ({
     },
   },
   mail: {
+    apiUrl: process.env.MAIL_API_URL!,
     host: process.env.MAIL_HOST!,
     password: process.env.MAIL_PASSWORD!,
     port: +process.env.MAIL_PORT!,

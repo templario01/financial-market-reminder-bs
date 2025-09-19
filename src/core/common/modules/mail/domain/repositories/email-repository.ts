@@ -5,5 +5,5 @@ import { SendEmailNotificationEntity } from '../entities/send-email-notification
 export abstract class IMailerRepository {
   abstract sendEmailNotification(
     data: SendEmailNotificationEntity,
-  ): Promise<void>;
+  ): Promise<void> | void;
 }
