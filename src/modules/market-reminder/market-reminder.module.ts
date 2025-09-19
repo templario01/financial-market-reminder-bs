@@ -16,10 +16,12 @@ import { IAccountRepository } from '../account-management/domain/repositories/ac
 import { PrismaAccountRepository } from '../account-management/infrastructure/output/prisma-account.repository';
 import { NotifyUserReportCommand } from '../../core/commands/execute-user-notification.command';
 import { MailModule } from '../../core/common/modules/mail/mail.module';
+import { SendWeeklyReportToUserUseCase } from './application/send-weekly-report-to-user.use-case';
 
 const useCases = [
   SyncPricesForAllQuotesUseCase,
   NotifyQuotationStatsToUsersUseCase,
+  SendWeeklyReportToUserUseCase,
 ];
 
 const repositories = [

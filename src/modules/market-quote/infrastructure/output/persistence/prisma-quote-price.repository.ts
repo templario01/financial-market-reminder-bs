@@ -1,9 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../../../core/database/prisma.service';
-import { ExternalQuotePriceEntity } from '../../../domain/entities/quote-price.entity';
+import {
+  ExternalQuotePriceEntity,
+  QuotePriceEntity,
+} from '../../../domain/entities/quote-price.entity';
 import { CreateQuotePriceEntity } from '../../../../market-reminder/domain/entities/create-quote-price.entitiy';
 import { Prisma } from '@prisma/client';
 import { IQuotePriceRepository } from '../../../domain/repositories/quote-price.respository';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class PrismaQuotePriceRepository implements IQuotePriceRepository {
@@ -41,5 +45,25 @@ export class PrismaQuotePriceRepository implements IQuotePriceRepository {
         }),
       ),
     });
+  }
+
+  async findAllByQuoteIdBetweenDates(
+    quoteId: string,
+    startDate: string,
+    endDate: string,
+  ): Promise<QuotePriceEntity[]> {
+    const quotePrices = await this.prisma.quotePrice.findMany({
+      where: {
+        quoteId,
+        createdAt: { gte: new Date(startDate), lte: new Date(endDate) },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    return quotePrices.map((quotePrice) =>
+      plainToInstance(QuotePriceEntity, {
+        ...quotePrice,
+        lastUpdated: quotePrice.createdAt,
+      } as QuotePriceEntity),
+    );
   }
 }

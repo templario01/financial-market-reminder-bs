@@ -4,55 +4,35 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { IFinancialMarketHistoricRepository } from '../../market-quote/domain/repositories/financial-market-historic.repository';
 import { IAccountRepository } from '../../account-management/domain/repositories/account.repository';
 import { IQuoteRepository } from '../../market-quote/domain/repositories/quote.repository';
+import { QuoteEntity } from '../../market-quote/domain/entities/quote.entity';
+import { roundTo } from '../../../core/common/utils/math-operations';
+import {
+  MarketReportEntity,
+  MarketReportQuote,
+} from '../domain/entities/market-report.entity';
+import { IFinancialMarketHistoricRepository } from '../../market-quote/domain/repositories/financial-market-historic.repository';
+import { SendWeeklyReportToUserUseCase } from './send-weekly-report-to-user.use-case';
+import { IQuotePriceRepository } from '../../market-quote/domain/repositories/quote-price.respository';
 import { TimeSerieElementQuoteEntity } from '../../market-quote/domain/entities/time-serie-element-quote.entity';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { QuoteEntity } from '../../market-quote/domain/entities/quote.entity';
-import {
-  ScheduleExecuteDay,
-  SchedulePeriod,
-} from '../../../core/common/enums/account.enum';
-import { IMailerRepository } from '../../../core/common/modules/mail/domain/repositories/email-repository';
-import { AccountEntity } from '../../account-management/domain/entities/account.entity';
-import { SendEmailNotificationEntity } from '../../../core/common/modules/mail/domain/entities/send-email-notification.entity';
-import { plainToInstance } from 'class-transformer';
-import { roundTo } from '../../../core/common/utils/math-operations';
 
-export type MarketReportQuote = {
-  ticker: string;
-  currentPrice: number;
-  lastWeekPrice: number;
-  change: number;
-  percentChange: number;
-  linealChartUrl: string;
+export type GenericTimeSerie = {
+  date: string;
+  close: number;
 };
-
-export type MarketReport = {
-  title: string;
-  description: string;
-  quotes: MarketReportQuote[];
-};
-
-export type WeeklyExecutionDay =
-  | ScheduleExecuteDay.EVERY_MONDAY
-  | ScheduleExecuteDay.EVERY_TUESDAY
-  | ScheduleExecuteDay.EVERY_WEDNESDAY
-  | ScheduleExecuteDay.EVERY_THURSDAY
-  | ScheduleExecuteDay.EVERY_FRIDAY
-  | ScheduleExecuteDay.EVERY_SATURDAY
-  | ScheduleExecuteDay.EVERY_SUNDAY;
 
 @Injectable()
 export class NotifyQuotationStatsToUsersUseCase {
   private readonly logger = new Logger(NotifyQuotationStatsToUsersUseCase.name);
   constructor(
-    private readonly financialMarketHistoricRepository: IFinancialMarketHistoricRepository,
     private readonly quoteRepository: IQuoteRepository,
+    private readonly quotePriceRepository: IQuotePriceRepository,
     private readonly accountRepository: IAccountRepository,
-    private readonly mailerRepository: IMailerRepository,
+    private readonly financialMarketHistoricRepository: IFinancialMarketHistoricRepository,
+    private readonly sendWeeklyReportToUserUseCase: SendWeeklyReportToUserUseCase,
   ) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_9AM, {
@@ -62,17 +42,32 @@ export class NotifyQuotationStatsToUsersUseCase {
   async execute(): Promise<void> {
     try {
       const accounts = await this.accountRepository.getAccountsWithRelations();
-      const resp = await this.quoteRepository.findAll();
-      const quotes = [resp[0], resp[1], resp[2]]; // TODO: Quitar esto y descomentar la linea de abajo
+      const quotes = await this.quoteRepository.findAll();
+      const weeklyTimeserie = await this.financialMarketHistoricRepository
+        .getWeeklyTimeSeries(quotes[0].ticker)
+        .catch((error) => {
+          if (!(error instanceof InternalServerErrorException)) {
+            this.logger.error({
+              msg: `Error parsing weekly time series: ${error.message}`,
+              err: error,
+            });
+          }
+          return null;
+        });
+      const [currentWeekDay, lastWeekDay] = weeklyTimeserie?.elements || [];
 
-      const weeklyMarketReport = await this.getWeeklyReportQuotes(quotes);
+      const weeklyMarketReport = await this.getWeeklyReportQuotesFromDatasource(
+        lastWeekDay.date,
+        currentWeekDay.date,
+        quotes,
+      );
 
       for (const account of accounts) {
         const accountFavoriteQuoteTickers = quotes
           .filter((quote) => account.favoriteQuotes?.includes(quote.id))
           .map((quote) => quote.ticker);
 
-        await this.handleWeeklyReport(
+        await this.sendWeeklyReportToUserUseCase.execute(
           account,
           accountFavoriteQuoteTickers,
           weeklyMarketReport,
@@ -88,67 +83,60 @@ export class NotifyQuotationStatsToUsersUseCase {
     }
   }
 
-  private async handleWeeklyReport(
-    account: AccountEntity,
-    accountQuotes: string[],
-    weeklyMarketReport: MarketReport,
-  ): Promise<void> {
-    const weeklyNotificationSchedule = account.notificationSchedules?.find(
-      (schedule) => schedule.period === SchedulePeriod.WEEKLY,
-    );
-    if (!weeklyNotificationSchedule) return;
-    const isCurrentWeekDayEqualsToExecutionDay =
-      this.compareWeekDayEqualsToExecutionDay(
-        weeklyNotificationSchedule.executionDay as WeeklyExecutionDay,
-      );
-    if (!isCurrentWeekDayEqualsToExecutionDay) return;
-    const accountWeeklyReportQuotes = weeklyMarketReport.quotes.filter(
-      (quote) => accountQuotes?.includes(quote.ticker),
-    );
+  private async getWeeklyReportQuotesFromDatasource(
+    startDate: string,
+    endDate: string,
+    quotes: QuoteEntity[],
+  ): Promise<MarketReportEntity> {
+    const marketReportQuotes: MarketReportQuote[] = [];
+    for (const quote of quotes) {
+      const prices =
+        await this.quotePriceRepository.findAllByQuoteIdBetweenDates(
+          quote.id,
+          startDate,
+          endDate,
+        );
+      const currentWeekPrice = prices[0];
+      const lastWeekPrice = prices[prices.length - 1];
+      if (currentWeekPrice !== undefined && lastWeekPrice !== undefined) {
+        const timeSeries: GenericTimeSerie[] = [];
+        for (const price of prices) {
+          timeSeries.push({
+            date: format(price.lastUpdated, 'yyyy-MM-dd'),
+            close: price.currentPrice,
+          });
+        }
 
-    console.log(account.user?.email);
-    console.log(
-      JSON.stringify({
-        body: {
-          ...weeklyMarketReport,
-          quotes: accountWeeklyReportQuotes,
-        },
-      }),
-    );
-
-    await this.mailerRepository.sendEmailNotification(
-      plainToInstance(SendEmailNotificationEntity, {
-        email: account.user?.email as string,
-        fromName: 'Stock Reminder',
-        subject: 'Reporte Semanal del Mercado',
-        templateId: 'weeklyReportEmail',
-        body: {
-          ...weeklyMarketReport,
-          quotes: accountWeeklyReportQuotes,
-        },
-      } as SendEmailNotificationEntity),
-    );
-  }
-
-  private compareWeekDayEqualsToExecutionDay(
-    executionDay?: WeeklyExecutionDay,
-  ): boolean {
-    if (!executionDay) return false;
-    const dayMap: Record<WeeklyExecutionDay, number> = {
-      [ScheduleExecuteDay.EVERY_MONDAY]: 1,
-      [ScheduleExecuteDay.EVERY_TUESDAY]: 2,
-      [ScheduleExecuteDay.EVERY_WEDNESDAY]: 3,
-      [ScheduleExecuteDay.EVERY_THURSDAY]: 4,
-      [ScheduleExecuteDay.EVERY_FRIDAY]: 5,
-      [ScheduleExecuteDay.EVERY_SATURDAY]: 6,
-      [ScheduleExecuteDay.EVERY_SUNDAY]: 0,
+        const weeklyReport: MarketReportQuote = {
+          ticker: quote.ticker,
+          currentPrice: currentWeekPrice.currentPrice || 0,
+          lastWeekPrice: lastWeekPrice.currentPrice || 0,
+          change: roundTo(
+            (currentWeekPrice?.currentPrice || 0) -
+              (lastWeekPrice?.currentPrice || 0),
+          ),
+          percentChange: roundTo(
+            (((currentWeekPrice?.currentPrice || 0) -
+              (lastWeekPrice?.currentPrice || 0)) /
+              (lastWeekPrice?.currentPrice || 1)) *
+              100,
+          ),
+          linealChartUrl: this.generateQuickChartUrl(timeSeries),
+        };
+        marketReportQuotes.push(weeklyReport);
+      }
+    }
+    return {
+      title: 'Reporte Semanal del Mercado',
+      description:
+        'Resumen semanal de las cotizaciones monitoreadas en tu cuenta.',
+      quotes: marketReportQuotes,
     };
-    const today = new Date();
-    const currentDayOfWeek = today.getDay();
-    return currentDayOfWeek === dayMap[executionDay];
   }
 
-  async getWeeklyReportQuotes(quotes: QuoteEntity[]): Promise<MarketReport> {
+  private async getWeeklyReportQuotes(
+    quotes: QuoteEntity[],
+  ): Promise<MarketReportEntity> {
     const marketReportQuotes: MarketReportQuote[] = [];
     for (const quote of quotes) {
       const [weeklyTimeserie, dailyTimeserie] = await Promise.all([
@@ -220,14 +208,18 @@ export class NotifyQuotationStatsToUsersUseCase {
       return elDate >= end && elDate <= start;
     });
   }
-  private generateQuickChartUrl(dates: TimeSerieElementQuoteEntity[]): string {
-    const sorted = [...dates].sort(
+  private generateQuickChartUrl(
+    dates: TimeSerieElementQuoteEntity[] | GenericTimeSerie[],
+  ): string {
+    const sortedTimeSeries = [...dates].sort(
       (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
     );
-    const labels = sorted.map((d) => {
-      return format(parseISO(d.date), 'EEEE dd', { locale: es }).toUpperCase();
+    const labels = sortedTimeSeries.map((timeSerie) => {
+      return format(parseISO(timeSerie.date), 'EEEE dd', {
+        locale: es,
+      }).toUpperCase();
     });
-    const data = sorted.map((d) => d.close);
+    const data = sortedTimeSeries.map((timeSerie) => timeSerie.close);
     const min = Math.min(...data);
     const max = Math.max(...data);
 
