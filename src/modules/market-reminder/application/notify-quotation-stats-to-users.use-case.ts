@@ -18,6 +18,7 @@ import { IQuotePriceRepository } from '../../market-quote/domain/repositories/qu
 import { TimeSerieElementQuoteEntity } from '../../market-quote/domain/entities/time-serie-element-quote.entity';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { getWeeklyDatesLimitsByDate } from '../../../core/common/utils/dates';
 
 export type GenericTimeSerie = {
   date: string;
@@ -43,22 +44,11 @@ export class NotifyQuotationStatsToUsersUseCase {
     try {
       const accounts = await this.accountRepository.getAccountsWithRelations();
       const quotes = await this.quoteRepository.findAll();
-      const weeklyTimeserie = await this.financialMarketHistoricRepository
-        .getWeeklyTimeSeries(quotes[0].ticker)
-        .catch((error) => {
-          if (!(error instanceof InternalServerErrorException)) {
-            this.logger.error({
-              msg: `Error parsing weekly time series: ${error.message}`,
-              err: error,
-            });
-          }
-          return null;
-        });
-      const [currentWeekDay, lastWeekDay] = weeklyTimeserie?.elements || [];
+      const { startDate, endDate } = getWeeklyDatesLimitsByDate(new Date());
 
       const weeklyMarketReport = await this.getWeeklyReportQuotesFromDatasource(
-        lastWeekDay.date,
-        currentWeekDay.date,
+        startDate,
+        endDate,
         quotes,
       );
 
@@ -84,8 +74,8 @@ export class NotifyQuotationStatsToUsersUseCase {
   }
 
   private async getWeeklyReportQuotesFromDatasource(
-    startDate: string,
-    endDate: string,
+    startDate: Date,
+    endDate: Date,
     quotes: QuoteEntity[],
   ): Promise<MarketReportEntity> {
     const marketReportQuotes: MarketReportQuote[] = [];

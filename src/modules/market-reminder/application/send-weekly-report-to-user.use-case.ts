@@ -41,6 +41,10 @@ export class SendWeeklyReportToUserUseCase {
       (quote) => accountQuotes?.includes(quote.ticker),
     );
 
+    this.logger.log(
+      `Enviando reporte semanal a ${account.user?.email} con ${accountWeeklyReportQuotes.length} cotizaciones.`,
+    );
+
     await this.mailerRepository.sendEmailNotification(
       plainToInstance(SendEmailNotificationEntity, {
         email: account.user?.email as string,

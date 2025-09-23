@@ -49,13 +49,13 @@ export class PrismaQuotePriceRepository implements IQuotePriceRepository {
 
   async findAllByQuoteIdBetweenDates(
     quoteId: string,
-    startDate: string,
-    endDate: string,
+    startDate: Date,
+    endDate: Date,
   ): Promise<QuotePriceEntity[]> {
     const quotePrices = await this.prisma.quotePrice.findMany({
       where: {
         quoteId,
-        createdAt: { gte: new Date(startDate), lte: new Date(endDate) },
+        createdAt: { gte: startDate, lte: endDate },
       },
       orderBy: { createdAt: 'desc' },
     });

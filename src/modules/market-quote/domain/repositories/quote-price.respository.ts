@@ -7,7 +7,7 @@ export abstract class IQuotePriceRepository {
   abstract createMany(quotes: CreateQuotePriceEntity[]): Promise<void>;
   abstract findAllByQuoteIdBetweenDates(
     quoteId: string,
-    startDate: string,
-    endDate: string,
+    startDate: Date,
+    endDate: Date,
   ): Promise<QuotePriceEntity[]>;
 }
