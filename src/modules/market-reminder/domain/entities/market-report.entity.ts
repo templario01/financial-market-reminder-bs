@@ -7,8 +7,17 @@ export type MarketReportQuote = {
   linealChartUrl: string;
 };
 
+export type MarketReportQuoteMonthly = {
+  ticker: string;
+  currentPrice: number;
+  lastMonthPrice: number;
+  change: number;
+  percentChange: number;
+  linealChartUrl: string;
+};
+
 export type MarketReportEntity = {
   title: string;
   description: string;
-  quotes: MarketReportQuote[];
+  quotes: MarketReportQuote[] | MarketReportQuoteMonthly[];
 };

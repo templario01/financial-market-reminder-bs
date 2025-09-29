@@ -1,4 +1,5 @@
 import { startOfWeek, addDays, subDays } from 'date-fns';
+import { subMonths } from 'date-fns';
 
 /**
  * Devuelve 2 fechas de acuerdo al día de la semana enviado.
@@ -44,6 +45,18 @@ export function getWeeklyDatesLimitsByDate(date: Date) {
     default:
       throw new Error('Día inválido, debe ser 0-6');
   }
+
+  return { startDate, endDate };
+}
+
+export function getLastMonthPeriodByDate(date: Date) {
+  const lastMonthDate = subMonths(date, 1);
+
+  const year = lastMonthDate.getUTCFullYear();
+  const month = lastMonthDate.getUTCMonth();
+
+  const startDate = new Date(Date.UTC(year, month, 1, 0, 0, 0, 0));
+  const endDate = new Date(Date.UTC(year, month + 1, 0, 23, 59, 59, 999));
 
   return { startDate, endDate };
 }
