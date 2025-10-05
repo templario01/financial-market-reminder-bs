@@ -8,6 +8,7 @@ import { CreateQuotePriceEntity } from '../../../../market-reminder/domain/entit
 import { Prisma } from '@prisma/client';
 import { IQuotePriceRepository } from '../../../domain/repositories/quote-price.respository';
 import { plainToInstance } from 'class-transformer';
+import { deleteDuplicatedDays } from '../../../../../core/common/utils/dates';
 
 @Injectable()
 export class PrismaQuotePriceRepository implements IQuotePriceRepository {
@@ -59,11 +60,13 @@ export class PrismaQuotePriceRepository implements IQuotePriceRepository {
       },
       orderBy: { createdAt: 'desc' },
     });
-    return quotePrices.map((quotePrice) =>
-      plainToInstance(QuotePriceEntity, {
-        ...quotePrice,
-        lastUpdated: quotePrice.createdAt,
-      } as QuotePriceEntity),
-    );
+    return quotePrices
+      .map((quotePrice) =>
+        plainToInstance(QuotePriceEntity, {
+          ...quotePrice,
+          lastUpdated: quotePrice.createdAt,
+        } as QuotePriceEntity),
+      )
+      .filter(deleteDuplicatedDays((price) => price.lastUpdated));
   }
 }

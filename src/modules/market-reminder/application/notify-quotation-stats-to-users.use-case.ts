@@ -262,6 +262,7 @@ export class NotifyQuotationStatsToUsersUseCase {
             color: 'black',
             font: {
               weight: 'bold',
+              size: 10,
             },
             formatter: (value) => value.toFixed(2),
           },

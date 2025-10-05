@@ -60,3 +60,17 @@ export function getLastMonthPeriodByDate(date: Date) {
 
   return { startDate, endDate };
 }
+
+export function deleteDuplicatedDays<T>(
+  getDate: (item: T) => Date,
+): (item: T, index: number, array: T[]) => boolean {
+  return (item, index, array) => {
+    const currentDay = getDate(item).toISOString().split('T')[0];
+    return !array
+      .slice(0, index)
+      .some(
+        (prevItem) =>
+          getDate(prevItem).toISOString().split('T')[0] === currentDay,
+      );
+  };
+}
