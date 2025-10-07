@@ -14,13 +14,17 @@ export class MarketReminderController {
   @Head('sync-quote-prices')
   syncQuotePrices() {
     this.logger.log('Starting quote prices synchronization...');
-    this.syncPricesForAllQuotesUseCase.execute();
+    this.syncPricesForAllQuotesUseCase.execute().then(() => {
+      this.logger.log('Quote prices synchronization completed.');
+    });
   }
 
   @HttpCode(HttpStatus.ACCEPTED)
   @Head('notify-user-reports')
   notifyUserReports() {
     this.logger.log('Starting user reports notification...');
-    this.notifyQuotationStatsToUsersUseCase.execute();
+    this.notifyQuotationStatsToUsersUseCase.execute().then(() => {
+      this.logger.log('User reports notification completed.');
+    });
   }
 }
