@@ -18,6 +18,7 @@ import { NotifyUserReportCommand } from '../../core/commands/execute-user-notifi
 import { MailModule } from '../../core/common/modules/mail/mail.module';
 import { SendWeeklyReportToUserUseCase } from './application/send-weekly-report-to-user.use-case';
 import { SendMonthlyReportToUserUseCase } from './application/send-monthly-report-to-user.use-case';
+import { MarketReminderController } from './infrastructure/input/market-reminder.controller';
 
 const useCases = [
   SyncPricesForAllQuotesUseCase,
@@ -50,6 +51,7 @@ const repositories = [
 ];
 
 @Module({
+  controllers: [MarketReminderController],
   imports: [PrismaModule, HttpModule, ConfigModule, MailModule],
   providers: [...useCases, ...repositories, NotifyUserReportCommand],
 })
